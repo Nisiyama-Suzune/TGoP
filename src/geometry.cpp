@@ -18,7 +18,7 @@ namespace geometry {
 			double sqr (const double &x) : returns x * x.
 	*/
 
-	const double EPS = 1E-6;
+	const double EPS = 1E-8;
 	const double PI = acos (-1);
 
 	int sgn (const double &x) { return x < -EPS ? -1 : x > EPS; }
@@ -117,7 +117,7 @@ namespace geometry {
 			double point_to_segment (const point &a, const lint &b) : returns the distance from a to b.
 				i.e. the minimized length from a to segment b.
 			bool in_polygon (const point &p, const std::vector <point> &po) :
-				checks if a is in a polygon with vetices po (counter-clockwise order).
+				checks if a is in a polygon with vetices po (clockwise or counter-clockwise order).
 			point project_to_line (const point &a, const line &b) :
 				returns the projection of a on b,
 	*/
@@ -147,7 +147,7 @@ namespace geometry {
 	}
 
 	double point_to_segment (const point &a, const line &b) {
-		if (sgn (dot (b.s - a, b.t - a)) <= 0)
+		if (sgn (dot (b.s - a, b.t - b.s) * dot (b.t - a, b.t - b.s)) <= 0)
 			return fabs (det (b.t - b.s, a - b.s)) / dis (b.s, b.t);
 		return std::min (dis (a, b.s), dis (a, b.t));
 	}
@@ -267,7 +267,6 @@ namespace geometry {
 	/*	Convex hull :
 			std::vector <point> convex_hull (std::vector <point> a) :
 				returns the convex hull of point set a (counter-clockwise).
-				the first point of the result is the same as the last.
 	*/
 
 	bool turn_left (const point &a, const point &b, const point &c) {
@@ -299,6 +298,7 @@ namespace geometry {
 			ret.push_back (a[i]);
 			++cnt;
 		}
+		ret.pop_back ();
 		return ret;
 	}
 
@@ -425,12 +425,12 @@ namespace geometry {
 		//	The area of triangle (a, b, (0, 0)) intersecting circle (point (), r).
 
 		double area (const point &a, const point &b, const double &r) {
-			double dA = dot (a, a), dB = dot (b, b), dC = point_to_line (point (), line (a, b)), ans = 0.0;
+			double dA = dot (a, a), dB = dot (b, b), dC = point_to_segment (point (), line (a, b)), ans = 0.0;
 			if (sgn (dA - r * r) <= 0 && sgn (dB - r * r) <= 0) return det (a, b) / 2.0;
 			point tA = a.unit () * r;
 			point tB = b.unit () * r;
 			if (sgn (dC - r) > 0) return sector_area (tA, tB, r);
-			std::pair <point, point> ret = line_circle_intersect (line (a, b), circle (0, r));
+			std::pair <point, point> ret = line_circle_intersect (line (a, b), circle (point (), r));
 			if (sgn (dA - r * r) > 0 && sgn (dB - r * r) > 0) {
 				ans += sector_area (tA, ret.first, r);
 				ans += det (ret.first, ret.second) / 2.0;
@@ -571,11 +571,12 @@ namespace geometry {
 
 }
 
+
 #include <cstdio>
 
 using namespace geometry;
 
-int main () {
-	return 0;
+int main() {
+    return 0;
 }
 
