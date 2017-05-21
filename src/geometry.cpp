@@ -409,7 +409,7 @@ namespace geometry {
 
 	/*	Intersection of a polygon and a circle :
 			double polygon_circle_intersect::main (const std::vector <point> &p, const circle &c) :
-				returns the area of intersection of polygon p (vertices counter-clockwise) and c.
+				returns the area of intersection of polygon p (vertices in either order) and c.
 	*/
 
 	namespace polygon_circle_intersect {
@@ -460,111 +460,102 @@ namespace geometry {
 	}
 
 	/*	Union of circles :
-			std::vector <double> union_circle::main (std::vector <circle> &cir) :
-				returns the union of circle set cir.
-				The i-th element is the area covered by i circles.
+			std::vector <double> union_circle::main (const std::vector <circle> &c) :
+				returns the union of circle set c.
+				The i-th element is the area covered with at least i circles.
 	*/
 
 	namespace union_circle {
 
-		double cub (const double &x) { return x * x * x; }
-
-		struct arc {
-			double t;
-			point p;
+		struct cp {
+			double x, y, angle;
 			int d;
-			arc() {};
-			arc (const double &t, const point &p, int d) : t (t), p (p), d (d) {}
+			double r;
+			cp (const double &x = 0, const double &y = 0, const double &angle = 0,
+			    int d = 0, const double &r = 0) : x (x), y (y), angle (angle), d (d), r (r) {}
 		};
 
-		std::vector <arc> vec;
-		std::vector <double> ans;
-		std::vector <point> c;
-
-		int cnt = 0;
-
-		bool operator < (const arc &a, const arc &b) {
-			return cmp (a.t, b.t) < 0;
+		double dis (const cp &a, const cp &b) {
+			return sqrt (sqr (a.x - b.x) + sqr (a.y - b.y));
 		}
 
-		void psh (const double t1, const point p1, const double t2, const point p2) {
-			if (cmp (t2, t1) < 0) cnt++;
-			vec.push_back (arc (t1, p1, 1));
-			vec.push_back (arc (t2, p2, -1));
+		double cross (const cp &p0, const cp &p1, const cp &p2) {
+			return (p1.x - p0.x) * (p2.y - p0.y) - (p1.y - p0.y) * (p2.x - p0.x);
 		}
 
-		void combine (int d, const double &ar, const point &o) {
-			if (sgn (ar) == 0) return;
-			c[d] = (c[d] * ans[d] + o * ar) * (1.0 / (ans[d] + ar));
-			ans[d] += ar;
+		int cir_cross (cp p1, double r1, cp p2, double r2, cp &cp1, cp &cp2) {
+			double mx = p2.x - p1.x, sx = p2.x + p1.x, mx2 = mx * mx;
+			double my = p2.y - p1.y, sy = p2.y + p1.y, my2 = my * my;
+			double sq = mx2 + my2, d = - (sq - sqr (r1 - r2)) * (sq - sqr (r1 + r2));
+			if (sgn (d) < 0) return 0;
+			if (sgn (d) <= 0) d = 0;
+			else d = sqrt (d);
+			double x = mx * ((r1 + r2) * (r1 - r2) + mx * sx) + sx * my2;
+			double y = my * ((r1 + r2) * (r1 - r2) + my * sy) + sy * mx2;
+			double dx = mx * d, dy = my * d;
+			sq *= 2;
+			cp1.x = (x - dy) / sq;
+			cp1.y = (y + dx) / sq;
+			cp2.x = (x + dy) / sq;
+			cp2.y = (y - dx) / sq;
+			if (sgn (d) > 0) return 2;
+			else return 1;
 		}
 
-		std::vector <double> main (std::vector <circle> &cir) {
-			int n = cir.size ();
-			std::vector <bool> f;
-			f.resize (n);
-			vec.clear ();
-			cnt = 0;
-			for (int i = 0; i < n; ++i) {
-				f[i] = true;
-				for (int j = 0; j < n; ++j)
-					if (i != j)
-						if ((cir[i] == cir[j] && i < j) ||
-						        (cir[i] != cir[j] && cmp (cir[i].r, cir[j].r) <= 0 &&
-						         cmp ((cir[i].c - cir[j].c).norm (),
-						              fabs (cir[i].r - cir[j].r) + EPS) <= 0)) {
-							f[i] = false;
-							break;
-						}
-			}
-			int n1 = 0;
+		bool circmp (const cp &u, const cp &v) {
+			return sgn (u.r - v.r) < 0;
+		}
+
+		bool cmp (const cp &u, const cp &v) {
+			if (sgn (u.angle - v.angle)) return u.angle < v.angle;
+			return u.d > v.d;
+		}
+
+		double calc (cp cir, cp cp1, cp cp2) {
+			double ans = (cp2.angle - cp1.angle) * sqr (cir.r)
+			             - cross (cir, cp1, cp2) + cross (cp (0, 0), cp1, cp2);
+			return ans / 2;
+		}
+
+		std::vector <double> main (const std::vector <circle> &c) {
+			int n = c.size ();
+			std::vector <cp> cir, tp;
+			std::vector <double> area;
+			cir.resize (n);
+			tp.resize (2 * n);
+			area.resize (n + 1);
+			for (int i = 0; i < n; i++)
+				cir[i] = cp (c[i].c.x, c[i].c.y, 0, 1, c[i].r);
+			cp cp1, cp2;
+			std::sort (cir.begin (), cir.end (), circmp);
 			for (int i = 0; i < n; ++i)
-				if (f[i]) cir[n1++] = cir[i];
-			n = n1;
-			ans.clear ();
-			c.clear ();
-			ans.resize (n + 1);
-			c.resize (n + 1);
-			point dvd;
+				for (int j = i + 1; j < n; ++j)
+					if (sgn (dis (cir[i], cir[j]) + cir[i].r - cir[j].r) <= 0)
+						cir[i].d++;
 			for (int i = 0; i < n; ++i) {
-				dvd = cir[i].c - point (cir[i].r, 0);
-				vec.clear ();
-				vec.push_back (arc (-PI, dvd, 1));
-				cnt = 0;
-				for (int j = 0; j < n; ++j)
-					if (j != i) {
-						double d = (cir[j].c - cir[i].c).norm2 ();
-						if (cmp (d, sqr (cir[j].r - cir[i].r)) <= 0) {
-							if (cir[i].r + i * EPS < cir[j].r + j * EPS)
-								psh (-PI, dvd, PI, dvd);
-						} else if (cmp (d, sqr (cir[j].r + cir[i].r)) < 0) {
-							double lam = 0.5 * (1 + (sqr (cir[i].r) - sqr (cir[j].r)) / d);
-							point cp (cir[i].c + (cir[j].c - cir[i].c) * lam);
-							point nor ((cir[j].c - cir[i].c)._rot90 ().unit () *
-							           (sqrt (sqr (cir[i].r) - (cp - cir[i].c).norm2 ())));
-							point frm (cp + nor);
-							point to (cp - nor);
-							psh (atan2 ((frm - cir[i].c).y, (frm - cir[i].c).x), frm,
-							     atan2 ((to - cir[i].c).y, (to - cir[i].c).x), to);
-						}
-					}
-				sort (vec.begin () + 1, vec.end ());
-				vec.push_back (arc (PI, dvd, -1));
-				for (int j = 0; j + 1 < (int) vec.size (); ++j) {
-					cnt += vec[j].d;
-					double t = vec[j + 1].t - vec[j].t;
-					double area = sqr (cir[i].r) * t * 0.5;
-					combine (cnt, area, cir[i].c +
-					         point (sin (vec[j + 1].t) - sin (vec[j].t),
-					                cos (vec[j].t) - cos (vec[j + 1].t)) *
-					         (1. / area / 3 * cub (cir[i].r)));
-					combine (cnt, -sqr (cir[i].r) * sin (t) * 0.5,
-					         (cir[i].c + vec[j].p + vec[j + 1].p) / 3.);
-					combine (cnt, det (vec[j].p, vec[j + 1].p) * 0.5,
-					         (vec[j].p + vec[j + 1].p) / 3.);
+				int tn = 0, cnt = 0;
+				for (int j = 0; j < n; ++j) {
+					if (i == j) continue;
+					if (cir_cross (cir[i], cir[i].r, cir[j], cir[j].r, cp2, cp1) < 2) continue;
+					cp1.angle = atan2 (cp1.y - cir[i].y, cp1.x - cir[i].x);
+					cp2.angle = atan2 (cp2.y - cir[i].y, cp2.x - cir[i].x);
+					cp1.d = 1;
+					tp[tn++] = cp1;
+					cp2.d = -1;
+					tp[tn++] = cp2;
+					if (sgn (cp1.angle - cp2.angle) > 0) cnt++;
+				}
+				tp[tn++] = cp (cir[i].x - cir[i].r, cir[i].y, PI, -cnt);
+				tp[tn++] = cp (cir[i].x - cir[i].r, cir[i].y, -PI, cnt);
+				std::sort (tp.begin (), tp.begin () + tn, cmp);
+				int p, s = cir[i].d + tp[0].d;
+				for (int j = 1; j < tn; ++j) {
+					p = s;
+					s += tp[j].d;
+					area[p] += calc (cir[i], tp[j - 1], tp[j]);
 				}
 			}
-			return ans;
+			return area;
 		}
 
 	}
@@ -577,6 +568,6 @@ namespace geometry {
 using namespace geometry;
 
 int main() {
-    return 0;
+	return 0;
 }
 
