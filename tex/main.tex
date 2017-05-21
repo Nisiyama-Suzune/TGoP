@@ -1,0 +1,36 @@
+\documentclass[a4paper]{report}
+
+\usepackage{courier}
+\usepackage[margin=1cm]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset {
+	language=C++,
+	tabsize=4,
+	basicstyle=\linespread{0.1}\footnotesize\ttfamily,
+	identifierstyle=\color{violet}\textbf,
+	keywordstyle=\color{blue}\textbf,
+	stringstyle=\color{brown}\textbf,
+	commentstyle=\color{teal}\textbf,
+}
+
+\title{The Grimoire of Programming}
+\date{}
+\author{}
+
+\begin{document}
+	\maketitle
+	\chapter{The Trial of Number Theory}
+		\lstinputlisting{../src/number.cpp}
+	\chapter{The Trial of Geometry}
+		\lstinputlisting{../src/geometry.cpp}
+	\chapter{The Trial of Graph}
+		\lstinputlisting{../src/graph.cpp}
+	\chapter{The Trial of String}
+		\lstinputlisting{../src/string.cpp}
+	\chapter{Reference}
+		\section{vimrc}
+			\input{vimrc.tex}
+\end{document}
+

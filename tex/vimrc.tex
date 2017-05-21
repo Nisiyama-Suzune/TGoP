@@ -1,0 +1,33 @@
+\begin{lstlisting}[language=tex,identifierstyle=\color{black},commentstyle=\color{black}]
+set ruler
+set number
+
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set smartindent
+
+set showmatch
+
+set hlsearch
+set incsearch
+
+set autoread
+
+set backspace=2
+set mouse=a
+
+syntax on
+
+nmap <C-A> ggVG
+vmap <C-C> "+y
+nmap <C-P> "+p
+
+autocmd FileType cpp set cindent
+autocmd FileType cpp map <F3> :vsplit %<.in <CR>
+autocmd FileType cpp map <F5> :!time ./%<.exe <CR>
+autocmd FileType cpp map <F7> :!gdb ./%<.exe <CR>
+autocmd FileType cpp map <F8> :!time ./%<.exe < %<.in <CR>
+autocmd FileType cpp map <F9> :!g++ % -o %< -g -std=c++11 -Wall -Wextra -Wconversion && size %<.exe <CR>
+autocmd FileType cpp map <F10> :!astyle -A2 -t -C -S -N -O -xd % <CR>
+\end{lstlisting}
