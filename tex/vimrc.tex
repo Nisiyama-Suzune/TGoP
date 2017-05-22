@@ -30,4 +30,10 @@ autocmd FileType cpp map <F7> :!gdb ./%<.exe <CR>
 autocmd FileType cpp map <F8> :!time ./%<.exe < %<.in <CR>
 autocmd FileType cpp map <F9> :!g++ % -o %< -g -std=c++11 -Wall -Wextra -Wconversion && size %<.exe <CR>
 autocmd FileType cpp map <F10> :!astyle -A2 -t -C -S -N -O -xd % <CR>
+
+autocmd FileType java map <F3> :vsplit %<.in <CR>
+autocmd FileType java map <F5> :!time java %< <CR>
+autocmd FileType java map <F8> :!time java %< < %<.in <CR>
+autocmd FileType java map <F9> :!javac % <CR>
+autocmd FileType java map <F10> :!astyle -A2 -t -C -S -N -O -xd % <CR>
 \end{lstlisting}

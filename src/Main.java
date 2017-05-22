@@ -63,6 +63,12 @@ import java.util.*;
 				getKey / getValue () / setValue (V) : entries.
 			clear () / put (K, V) / get (K) / remove (K) : basic operation.
 			size () : size.
+		StringBuilder :
+			Mutable string.
+			StringBuilder (string) : generates a builder.
+			append (int, string, ...) / insert (int offset, ...) : adds objects.
+			charAt (int) / setCharAt (int, char) : accesses a char.
+			toString () : converts to string.
 */
 
 /* Examples on Comparator :
