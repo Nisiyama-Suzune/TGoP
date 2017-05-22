@@ -118,6 +118,8 @@ namespace geometry {
 				i.e. the minimized length from a to segment b.
 			bool in_polygon (const point &p, const std::vector <point> &po) :
 				checks if a is in a polygon with vetices po (clockwise or counter-clockwise order).
+			double polygon_area (const std::vector <point> &a) :
+				returns the signed area of polygon a (positive for counter-clockwise order, and vise-versa).
 			point project_to_line (const point &a, const line &b) :
 				returns the projection of a on b,
 	*/
@@ -167,6 +169,13 @@ namespace geometry {
 			if (x < 0 && z <= 0 && y > 0) counter--;
 		}
 		return counter != 0;
+	}
+
+	double polygon_area (const std::vector <point> &a) {
+		double ans = 0.0;
+		for (int i = 0; i < (int) a.size (); ++i)
+			ans += det (a[i], a[ (i + 1) % a.size ()]) / 2.0;
+		return ans;
 	}
 
 	point project_to_line (const point &a, const line &b) {
