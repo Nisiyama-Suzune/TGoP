@@ -68,7 +68,14 @@ import java.util.*;
 			StringBuilder (string) : generates a builder.
 			append (int, string, ...) / insert (int offset, ...) : adds objects.
 			charAt (int) / setCharAt (int, char) : accesses a char.
+			delete (int, int) : removes a substring.
+			reverse () : reverses itself.
+			length () : returns the length.
 			toString () : converts to string.
+		String :
+			Immutable string.
+			String.format (String, ...) : formats a string. i.e. sprintf.
+			toLowerCase / toUpperCase () : changes the case of letters.
 */
 
 /* Examples on Comparator :
