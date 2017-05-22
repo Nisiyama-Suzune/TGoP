@@ -115,6 +115,39 @@ public class Main {
 
 */
 
+/*	Another way to implement is to use Comparable.
+	However, equalTo and hashCode must be rewritten.
+	Otherwise, containers may fail and give strange answers.
+	Example :
+
+	public static class Point implements Comparable <Point> {
+		public int x;
+		public int y;
+		public Point () {
+			x = 0;
+			y = 0;
+		}
+		public Point (int xx, int yy) {
+			x = xx;
+			y = yy;
+		}
+		public int compareTo (Point p) {
+			if (x < p.x) return -1;
+			if (x == p.x) {
+				if (y < p.y) return -1;
+				if (y == p.y) return 0;
+			}
+			return 1;
+		}
+		public boolean equalTo (Point p) {
+			return (x == p.x && y == p.y);
+		}
+		public int hashCode () {
+			return x + y;
+		}
+	};
+*/
+
 //Faster IO :
 
 public class Main {
