@@ -1,10 +1,20 @@
-//number.cpp
+/*	Number theory template :
+	Deals with various aspects of integer, division, modulo, etc.
+*/
 
 #include <cmath>
 #include <complex>
 
 namespace number {
 
+/*	Basic operation :
+		long long inverse (const long long &x, const long long &mod) :
+			returns the inverse of x modulo mod.
+			i.e. x * inv (x) % mod = 1.
+		int fpm (int x, int n, int mod) :
+			returns x^n % mod. i.e. Fast Power with Modulo.
+*/
+		
 	long long inverse (const long long &x, const long long &mod) {
 		if (x == 1) return 1;
 		return (mod - mod / x) * inverse (mod % x, mod) % mod;
@@ -20,26 +30,33 @@ namespace number {
 		return ans;
 	}
 
-	namespace FFT {
+	/* Discrete Fourier transform :
+		int dft::prepare (int n) : readys the transformation with dimension n.
+		void dft::main (complex *a, int n, int f) :
+			transforms array a with dimension n to its frequency representation.
+			transforms it back when f = 1.
+	*/
+
+	namespace dft {
 
 		const int MAXN = 1E6;
 		const double PI = acos (-1);
 
-		typedef std::complex <double> Complex;
+		typedef std::complex <double> complex;
 
-		Complex e[2][MAXN];
+		complex e[2][MAXN];
 
 		int prepare (int n) {
 			int len = 1;
 			for (; len <= 2 * n; len <<= 1);
 			for (int i = 0; i < len; i++) {
-				e[0][i] = Complex (cos (2 * PI * i / len), sin (2 * PI * i / len));
-				e[1][i] = Complex (cos (2 * PI * i / len), -sin (2 * PI * i / len));
+				e[0][i] = complex (cos (2 * PI * i / len), sin (2 * PI * i / len));
+				e[1][i] = complex (cos (2 * PI * i / len), -sin (2 * PI * i / len));
 			}
 			return len;
 		}
 
-		void DFT (Complex *a, int n, int f) {
+		void main (complex *a, int n, int f) {
 			for (int i = 0, j = 0; i < n; i++) {
 				if (i > j) std::swap (a[i], a[j]);
 				for (int t = n >> 1; (j ^= t) < t; t >>= 1);
@@ -47,23 +64,33 @@ namespace number {
 			for (int i = 2; i <= n; i <<= 1)
 				for (int j = 0; j < n; j += i)
 					for (int k = 0; k < (i >> 1); k++) {
-						Complex A = a[j + k];
-						Complex B = e[f][n / i * k] * a[j + k + (i >> 1)];
+						complex A = a[j + k];
+						complex B = e[f][n / i * k] * a[j + k + (i >> 1)];
 						a[j + k] = A + B;
 						a[j + k + (i >> 1)] = A - B;
 					}
 			if (f == 1) {
 				for (int i = 0; i < n; i++)
-					a[i] = Complex (a[i].real () / n, a[i].imag ());
+					a[i] = complex (a[i].real () / n, a[i].imag ());
 			}
 		}
 	}
 
-	namespace NTT {
+	/* Number-theoretic transform :
+		void ntt::main (int *a, int n, int f, int mod, int prt) :
+			converts polynominal f (x) = a[0] * x^0 + a[1] * x^1 + ... + a[n - 1] * x^(n - 1)
+				to a vector (f (prt^0), f (prt^1), f (prt^2), ..., f (prt^(n - 1))). (module mod)
+			Converts back if f = 1.
+			Requries specific mod and corresponding prt to work. (given in MOD and PRT)
+		void ntt::crt (int *a, int mod) :
+			makes up the results a from 3 primes to a certain module mod.
+	*/
+
+	namespace ntt {
 
 		const int MAXN = 1E6;
 
-		void DFT (int *a, int n, int f, int mod, int prt) {
+		void main (int *a, int n, int f, int mod, int prt) {
 			for (register int i = 0, j = 0; i < n; i++) {
 				if (i > j) std::swap (a[i], a[j]);
 				for (register int t = n >> 1; (j ^= t) < t; t >>= 1);
@@ -93,25 +120,25 @@ namespace number {
 			}
 		}
 
-		const int FFT[3] = {1045430273, 1051721729, 1053818881}, PRT[3] = {3, 6, 7};
+		const int MOD[3] = {1045430273, 1051721729, 1053818881}, PRT[3] = {3, 6, 7};
 
-		int CRT (int *a, int mod) {
+		int crt (int *a, int mod) {
 			static int inv[3][3];
 			for (int i = 0; i < 3; i++)
 				for (int j = 0; j < 3; j++)
-					inv[i][j] = (int) inverse (FFT[i], FFT[j]);
+					inv[i][j] = (int) inverse (MOD[i], MOD[j]);
 			static int x[3];
 			for (int i = 0; i < 3; i++) {
 				x[i] = a[i];
 				for (int j = 0; j < i; j++) {
-					int t = (x[i] - x[j] + FFT[i]) % FFT[i];
-					if (t < 0) t += FFT[i];
-					x[i] = int (1LL * t * inv[j][i] % FFT[i]);
+					int t = (x[i] - x[j] + MOD[i]) % MOD[i];
+					if (t < 0) t += MOD[i];
+					x[i] = int (1LL * t * inv[j][i] % MOD[i]);
 				}
 			}
 			int sum = 1, ret = x[0] % mod;
 			for (int i = 1; i < 3; i ++) {
-				sum = int (1LL * sum * FFT[i - 1] % mod);
+				sum = int (1LL * sum * MOD[i - 1] % mod);
 				ret += int (1LL * x[i] * sum % mod);
 				if (ret >= mod) ret -= mod;
 			}
