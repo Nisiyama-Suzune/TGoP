@@ -38,10 +38,10 @@ namespace number {
 				transforms back when f = 1.
 	*/
 
-	namespace dft {
+	struct dft {
 
-		const int MAXN = 1E6;
-		const double PI = acos (-1);
+		constexpr static int MAXN = 1E6;
+		constexpr static double PI = acos (-1);
 
 		typedef std::complex <double> complex;
 
@@ -75,7 +75,7 @@ namespace number {
 					a[i] = complex (a[i].real () / n, a[i].imag ());
 			}
 		}
-	}
+	};
 
 	/* Number-theoretic transform :
 		void ntt::main (int *a, int n, int f, int mod, int prt) :
@@ -87,9 +87,9 @@ namespace number {
 			makes up the results a from module 3 primes to a certain module mod.
 	*/
 
-	namespace ntt {
+	struct ntt {
 
-		const int MAXN = 1E6;
+		constexpr static int MAXN = 1E6;
 
 		void main (int *a, int n, int f, int mod, int prt) {
 			for (register int i = 0, j = 0; i < n; i++) {
@@ -121,7 +121,7 @@ namespace number {
 			}
 		}
 
-		const int MOD[3] = {1045430273, 1051721729, 1053818881}, PRT[3] = {3, 6, 7};
+		constexpr static int MOD[3] = {1045430273, 1051721729, 1053818881}, PRT[3] = {3, 6, 7};
 
 		int crt (int *a, int mod) {
 			static int inv[3][3];
@@ -146,17 +146,17 @@ namespace number {
 			return ret;
 		}
 
-	}
+	};
 
 	/*	Chinese Remainder Theroem :
-			bool crt::main (const std::vector <std::pair<long long, long long> > &input,
+			bool crt::solve (const std::vector <std::pair<long long, long long> > &input,
 			                std::pair<long long, long long> &output) :
 				solves for an integer set x = output.first + k * output.second
 					that satisfies x % input[i].second = input[i].first.
 				Returns whether a solution exists.
 	*/
 
-	namespace crt {
+	struct crt {
 
 		void euclid (const long long &a, const long long &b,
 		             long long &x, long long &y) {
@@ -192,7 +192,7 @@ namespace number {
 			return true;
 		}
 
-	}
+	};
 
 }
 

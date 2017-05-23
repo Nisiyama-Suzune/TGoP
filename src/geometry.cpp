@@ -440,11 +440,11 @@ namespace geometry {
 	}
 
 	/*	Intersection of a polygon and a circle :
-			double polygon_circle_intersect::main (const std::vector <point> &p, const circle &c) :
+			double polygon_circle_intersect::solve (const std::vector <point> &p, const circle &c) :
 				returns the area of intersection of polygon p (vertices in either order) and c.
 	*/
 
-	namespace polygon_circle_intersect {
+	struct polygon_circle_intersect {
 
 		//	The area of the sector with center (0, 0), radius r and segment ab.
 
@@ -477,7 +477,7 @@ namespace geometry {
 
 		//	Main process.
 
-		double main (const std::vector <point> &p, const circle &c) {
+		double solve (const std::vector <point> &p, const circle &c) {
 			double ret = 0.0;
 			for (int i = 0; i < (int) p.size (); ++i) {
 				int s = sgn (det (p[i] - c.c, p[ (i + 1) % p.size ()] - c.c));
@@ -489,15 +489,15 @@ namespace geometry {
 			return fabs (ret);
 		}
 
-	}
+	};
 
 	/*	Union of circles :
-			std::vector <double> union_circle::main (const std::vector <circle> &c) :
+			std::vector <double> union_circle::solve (const std::vector <circle> &c) :
 				returns the union of circle set c.
 				The i-th element is the area covered with at least i circles.
 	*/
 
-	namespace union_circle {
+	struct union_circle {
 
 		struct cp {
 			double x, y, angle;
@@ -549,7 +549,7 @@ namespace geometry {
 			return ans / 2;
 		}
 
-		std::vector <double> main (const std::vector <circle> &c) {
+		std::vector <double> solve (const std::vector <circle> &c) {
 			int n = c.size ();
 			std::vector <cp> cir, tp;
 			std::vector <double> area;
@@ -590,7 +590,7 @@ namespace geometry {
 			return area;
 		}
 
-	}
+	};
 
 }
 
