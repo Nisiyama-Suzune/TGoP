@@ -12,5 +12,3 @@ Check how ntt::crt works.
 
 ### Geometry
 
-Check the correctness of centers of a triangle.
-
