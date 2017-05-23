@@ -4,17 +4,18 @@
 
 #include <cmath>
 #include <complex>
+#include <vector>
 
 namespace number {
 
-/*	Basic operation :
-		long long inverse (const long long &x, const long long &mod) :
-			returns the inverse of x modulo mod.
-			i.e. x * inv (x) % mod = 1.
-		int fpm (int x, int n, int mod) :
-			returns x^n % mod. i.e. Fast Power with Modulo.
-*/
-		
+	/*	Basic operation :
+			long long inverse (const long long &x, const long long &mod) :
+				returns the inverse of x modulo mod.
+				i.e. x * inv (x) % mod = 1.
+			int fpm (int x, int n, int mod) :
+				returns x^n % mod. i.e. Fast Power with Modulo.
+	*/
+
 	long long inverse (const long long &x, const long long &mod) {
 		if (x == 1) return 1;
 		return (mod - mod / x) * inverse (mod % x, mod) % mod;
@@ -30,11 +31,11 @@ namespace number {
 		return ans;
 	}
 
-	/* Discrete Fourier transform :
-		int dft::prepare (int n) : readys the transformation with dimension n.
-		void dft::main (complex *a, int n, int f) :
-			transforms array a with dimension n to its frequency representation.
-			transforms it back when f = 1.
+	/*	Discrete Fourier transform :
+			int dft::prepare (int n) : readys the transformation with dimension n.
+			void dft::main (complex *a, int n, int f) :
+				transforms array a with dimension n to its frequency representation.
+				transforms back when f = 1.
 	*/
 
 	namespace dft {
@@ -82,8 +83,8 @@ namespace number {
 				to a vector (f (prt^0), f (prt^1), f (prt^2), ..., f (prt^(n - 1))). (module mod)
 			Converts back if f = 1.
 			Requries specific mod and corresponding prt to work. (given in MOD and PRT)
-		void ntt::crt (int *a, int mod) :
-			makes up the results a from 3 primes to a certain module mod.
+		int ntt::crt (int *a, int mod) :
+			makes up the results a from module 3 primes to a certain module mod.
 	*/
 
 	namespace ntt {
@@ -143,6 +144,52 @@ namespace number {
 				if (ret >= mod) ret -= mod;
 			}
 			return ret;
+		}
+
+	}
+
+	/*	Chinese Remainder Theroem :
+			bool crt::main (const std::vector <std::pair<long long, long long> > &input,
+			                std::pair<long long, long long> &output) :
+				solves for an integer set x = output.first + k * output.second
+					that satisfies x % input[i].second = input[i].first.
+				Returns whether a solution exists.
+	*/
+
+	namespace crt {
+
+		void euclid (const long long &a, const long long &b,
+		             long long &x, long long &y) {
+			if (b == 0) x = 1, y = 0;
+			else euclid (b, a % b, y, x), y -= a / b * x;
+		}
+
+		long long gcd (const long long &a, const long long &b) {
+			if (b == 0) return a;
+			return gcd (b, a % b);
+		}
+
+		long long fix (const long long &a, const long long &b) {
+			return (a % b + b) % b;
+		}
+
+		bool solve (const std::vector <std::pair<long long, long long> > &input,
+		            std::pair<long long, long long> &output) {
+			output = std::make_pair (1, 1);
+			for (int i = 0; i < (int) input.size (); ++i) {
+				long long number, useless;
+				euclid (output.second, input[i].second, number, useless);
+				long long divisor = gcd (output.second, input[i].second);
+				if ((input[i].first - output.first) % divisor) {
+					return false;
+				}
+				number *= (input[i].first - output.first) / divisor;
+				number = fix (number, input[i].second);
+				output.first += output.second * number;
+				output.second *= input[i].second / divisor;
+				output.first = fix (output.first, output.second);
+			}
+			return true;
 		}
 
 	}
