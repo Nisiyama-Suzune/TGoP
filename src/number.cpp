@@ -14,6 +14,11 @@ namespace number {
 				i.e. x * inv (x) % mod = 1.
 			int fpm (int x, int n, int mod) :
 				returns x^n % mod. i.e. Fast Power with Modulo.
+			void euclid (const long long &a, const long long &b,
+			             long long &x, long long &y) :
+				solves for ax + by = gcd (a, b).
+			long long gcd (const long long &a, const long long &b) :
+				solves for gcd (a, b).
 	*/
 
 	long long inverse (const long long &x, const long long &mod) {
@@ -29,6 +34,17 @@ namespace number {
 			n >>= 1;
 		}
 		return ans;
+	}
+
+	void euclid (const long long &a, const long long &b,
+	             long long &x, long long &y) {
+		if (b == 0) x = 1, y = 0;
+		else euclid (b, a % b, y, x), y -= a / b * x;
+	}
+
+	long long gcd (const long long &a, const long long &b) {
+		if (b == 0) return a;
+		return gcd (b, a % b);
 	}
 
 	/*	Discrete Fourier transform :
@@ -158,17 +174,6 @@ namespace number {
 
 	struct crt {
 
-		void euclid (const long long &a, const long long &b,
-		             long long &x, long long &y) {
-			if (b == 0) x = 1, y = 0;
-			else euclid (b, a % b, y, x), y -= a / b * x;
-		}
-
-		long long gcd (const long long &a, const long long &b) {
-			if (b == 0) return a;
-			return gcd (b, a % b);
-		}
-
 		long long fix (const long long &a, const long long &b) {
 			return (a % b + b) % b;
 		}
@@ -190,6 +195,87 @@ namespace number {
 				output.first = fix (output.first, output.second);
 			}
 			return true;
+		}
+
+	};
+
+	/*	Miller Rabin :
+			Checks whether a certain integer is prime.
+			Usage : bool miller_rabin::solve (long long).
+	*/
+
+	struct miller_rabin {
+
+		const static int BASE[12] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37};
+
+		bool check (const long long &prime, const long long &base) {
+			long long number = prime - 1;
+			for (; ~number & 1; number >>= 1);
+			long long result = power_mod (base, number, prime);
+			for (; number != prime - 1 && result != 1 && result != prime - 1; number <<= 1) {
+				result = multiply_mod (result, result, prime);
+			}
+			return result == prime - 1 || (number & 1) == 1;
+		}
+
+		bool solve (const long long &number) {
+			if (number < 2) {
+				return false;
+			}
+			if (number < 4) {
+				return true;
+			}
+			if (~number & 1) {
+				return false;
+			}
+			for (int i = 0; i < 12 && BASE[i] < number; ++i) {
+				if (!check (number, BASE[i])) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+	};
+
+	/*	Pollard Rho :
+			Factorizes an integer.
+			Usage : void pollard_rho::solve (long long, std::vector <long long> &).
+	*/
+
+	struct pollard_rho {
+
+		long long pollard_rho (const long long &number, const long long &seed) {
+			long long x = rand() % (number - 1) + 1, y = x;
+			for (int head = 1, tail = 2; ; ) {
+				x = multiply_mod (x, x, number);
+				x = add_mod (x, seed, number);
+				if (x == y) {
+					return number;
+				}
+				long long answer = std::__gcd (abs (x - y), number);
+				if (answer > 1 && answer < number) {
+					return answer;
+				}
+				if (++head == tail) {
+					y = x;
+					tail <<= 1;
+				}
+			}
+		}
+
+		void solve (const long long &number, std::vector<long long> &divisor) {
+			if (number > 1) {
+				if (miller_rabin (number)) {
+					divisor.push_back (number);
+				} else {
+					long long factor = number;
+					for (; factor >= number;
+					        factor = pollard_rho (number, rand() % (number - 1) + 1));
+					factorize (number / factor, divisor);
+					factorize (factor, divisor);
+				}
+			}
 		}
 
 	};

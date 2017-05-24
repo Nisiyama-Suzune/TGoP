@@ -34,6 +34,28 @@ namespace graph {
 	};
 
 	struct flow_edge_list {
+		int size;
+		int begin[MAXN], dest[MAXM], next[MAXM], flow[MAXM], inv[MAXM];
+		void clear (int n) {
+			size = 0;
+			for (int i = 0; i < n; i++)
+				begin[i] = -1;
+		}
+		flow_edge_list (int n = MAXN) {
+			clear (n);
+		}
+		void add_edge (int u, int v, int f) {
+			dest[size] = v;
+			next[size] = begin[u];
+			flow[size] = f;
+			inv[size] = size + 1;
+			begin[u] = size++;
+			dest[size] = u;
+			next[size] = begin[v];
+			flow[size] = 0;
+			inv[size] = size - 1;
+			begin[v] = size++;
+		}
 	};
 
 	/*	Hopcoft-Carp algorithm :
@@ -101,7 +123,7 @@ namespace graph {
 	};
 
 	/*	Kuhn–Munkres algorithm :
-			weighted minimum matching algorithm. Complexity O (N^3).
+			weighted maximum matching algorithm. Complexity O (N^3).
 			struct kuhn_munkres :
 				Initialize : pass nx, ny as the size of both sets, w as the weight matrix.
 				Usage : solve () for the minimum matching. The matching is in link.
@@ -128,7 +150,7 @@ namespace graph {
 						link[y] = x;
 						return 1;
 					}
-				} else slack[y] = std::min (slack[y], t);
+				} else slack[y] = std::max (slack[y], t);
 			}
 			return 0;
 		}
@@ -138,17 +160,17 @@ namespace graph {
 			std::fill (link, link + ny, -1);
 			std::fill (ly, ly + ny, 0);
 			for (i = 0; i < nx; i++)
-				for (j = 0, lx[i] = -INF; j < ny; j++)
-					lx[i] = std::max (lx[i], w[i][j]);
+				for (j = 0, lx[i] = INF; j < ny; j++)
+					lx[i] = std::min (lx[i], w[i][j]);
 			for (int x = 0; x < nx; x++) {
-				for (i = 0; i < ny; i++) slack[i] = INF;
+				for (i = 0; i < ny; i++) slack[i] = -INF;
 				while (true) {
 					std::fill (visx, visx + nx, 0);
 					std::fill (visy, visy + ny, 0);
 					if (dfs (x)) break;
 					int d = INF;
 					for (i = 0; i < ny; i++)
-						if (!visy[i] && d > slack[i]) d = slack[i];
+						if (!visy[i] && d < slack[i]) d = slack[i];
 					for (i = 0; i < nx; i++)
 						if (visx[i]) lx[i] -= d;
 					for (i = 0; i < ny; i++)
@@ -165,7 +187,7 @@ namespace graph {
 	};
 
 	/*	Weighted matching algorithm :
-			maximum match for graphs. Strange hack.
+			maximum match for graphs. Not stable.
 			struct weighted_match :
 				Usage : Set k to the size of vertices, w to the weight matrix.
 				Note that k has to be even for the algorithm to work.
@@ -263,7 +285,7 @@ namespace graph {
 		int flower_from[MAXN * 2 + 1][MAXN + 1], S[MAXN * 2 + 1], vis[MAXN * 2 + 1];
 		std::vector<int> flower[MAXN * 2 + 1];
 		std::queue<int> q;
-		int e_delta (const edge &e) { 
+		int e_delta (const edge &e) {
 			return lab[e.u] + lab[e.v] - g[e.u][e.v].w * 2;
 		}
 		void update_slack (int u, int x) {
@@ -285,7 +307,7 @@ namespace graph {
 		}
 		int get_pr (int b, int xr) {
 			int pr = find (flower[b].begin(), flower[b].end(), xr) - flower[b].begin();
-			if (pr % 2 == 1) { 
+			if (pr % 2 == 1) {
 				reverse (flower[b].begin() + 1, flower[b].end());
 				return (int)flower[b].size() - pr;
 			} else return pr;
@@ -449,6 +471,126 @@ namespace graph {
 				for (int v = 1; v <= n; ++v)
 					g[u][v] = edge (u, v, 0);
 		}
+	};
+
+	/*	Sparse graph maximum flow :
+			int isap::solve (const flow_edge_list &e, int n, int s, int t) :
+				e : edge list.
+				n : vertex size.
+				s : source.
+				t : sink.
+	*/
+
+	struct isap {
+
+		const static int MAXN = 1E3;
+		const static int INF = 1E9;
+
+		int pre[MAXN], d[MAXN], gap[MAXN], cur[MAXN];
+
+		int solve (flow_edge_list &e, int n, int s, int t) {
+			std::fill (pre, pre + n + 1, 0);
+			std::fill (d, d + n + 1, 0);
+			std::fill (gap, gap + n + 1, 0);
+			for (int i = 0; i < n; i++) cur[i] = e.begin[i];
+			gap[0] = n;
+			int u = pre[s] = s, v, maxflow = 0;
+			while (d[s] < n) {
+				v = n;
+				for (int i = cur[u]; i != -1; i = e.next[i])
+					if (e.flow[i] && d[u] == d[e.dest[i]] + 1) {
+						v = e.dest[i];
+						cur[u] = i;
+						break;
+					}
+				if (v < n) {
+					pre[v] = u;
+					u = v;
+					if (v == t) {
+						int dflow = INF, p = t;
+						u = s;
+						while (p != s) {
+							p = pre[p];
+							dflow = std::min (dflow, e.flow[cur[p]]);
+						}
+						maxflow += dflow;
+						p = t;
+						while (p != s) {
+							p = pre[p];
+							e.flow[cur[p]] -= dflow;
+							e.flow[e.inv[cur[p]]] += dflow;
+						}
+					}
+				} else {
+					int mindist = n + 1;
+					for (int i = e.begin[u]; i != -1; i = e.next[i])
+						if (e.flow[i] && mindist > d[e.dest[i]]) {
+							mindist = d[e.dest[i]];
+							cur[u] = i;
+						}
+					if (!--gap[d[u]]) return maxflow;
+					gap[d[u] = mindist + 1]++;
+					u = pre[u];
+				}
+			}
+			return maxflow;
+		}
+
+	};
+
+	/*	Dense graph maximum flow :
+			int dinic::solve (const flow_edge_list &e, int n, int s, int t) :
+				e : edge list.
+				n : vertex size.
+				s : source.
+				t : sink.
+	*/
+
+	struct dinic {
+
+		const static int MAXN = 1E3;
+		const static int INF = 1E9;
+
+		flow_edge_list &e;
+		int n, s, t;
+
+		int d[MAXN], w[MAXN], q[MAXN];
+
+		int bfs() {
+			for (int i = 0; i < n; i ++) d[i] = -1;
+			int l, r;
+			q[l = r = 0] = s, d[s] = 0;
+			for (; l <= r; l ++)
+				for (int k = e.begin[q[l]]; k > -1; k = e.next[k])
+					if (d[e.dest[k]] == -1 && e.flow[k] > 0) d[e.dest[k]] = d[q[l]] + 1, q[++r] = e.dest[k];
+			return d[t] > -1 ? 1 : 0;
+		}
+
+		int dfs (int u, int ext) {
+			if (u == t) return ext;
+			int k = w[u], ret = 0;
+			for (; k > -1; k = e.next[k], w[u] = k) {
+				if (ext == 0) break;
+				if (d[e.dest[k]] == d[u] + 1 && e.flow[k] > 0) {
+					int flow = dfs (e.dest[k], std::min (e.flow[k], ext));
+					if (flow > 0) {
+						e.flow[k] -= flow, e.flow[e.inv[k]] += flow;
+						ret += flow, ext -= flow;
+					}
+				}
+			}
+			if (k == -1) d[u] = -1;
+			return ret;
+		}
+
+		void solve (flow_edge_list &e, int n, int s, int t) {
+			dinic::e = e; dinic::n = n; dinic::s = s; dinic::t = t;
+			while (bfs ()) {
+				for (int i = 0; i < n; i ++) w[i] = e.begin[i];
+				dfs (s, INF);
+			}
+		}
+
 	};
 
 }
