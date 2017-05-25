@@ -2,6 +2,7 @@
 	Deals with various aspects of integer, division, modulo, etc.
 */
 
+#include <cstdlib>
 #include <cmath>
 #include <complex>
 #include <vector>
@@ -19,7 +20,13 @@ namespace number {
 				solves for ax + by = gcd (a, b).
 			long long gcd (const long long &a, const long long &b) :
 				solves for gcd (a, b).
+			long long mul_mod (const long long &a, const long long &b, const long long &mod) :
+				returns a * b % mod.
+			long long llfpm (const long long &x, const long long &n, const long long &mod) :
+				returns x^n % mod.
 	*/
+
+	long long abs (const long long &x) { return x > 0 ? x : -x; }
 
 	long long inverse (const long long &x, const long long &mod) {
 		if (x == 1) return 1;
@@ -45,6 +52,26 @@ namespace number {
 	long long gcd (const long long &a, const long long &b) {
 		if (b == 0) return a;
 		return gcd (b, a % b);
+	}
+
+	long long mul_mod (const long long &a, const long long &b, const long long &mod) {
+		long long ans = 0, add = a, k = b;
+		while (k) {
+			if (k & 1) ans = (ans + add) % mod;
+			add = (add + add) % mod;
+			k >>= 1;
+		}
+		return ans;
+	}
+
+	long long llfpm (const long long &x, const long long &n, const long long &mod) {
+		long long ans = 1, mul = x, k = n;
+		while (k) {
+			if (k & 1) ans = mul_mod (ans, mul, mod);
+			mul = mul_mod (mul, mul, mod);
+			k >>= 1;
+		}
+		return ans;
 	}
 
 	/*	Discrete Fourier transform :
@@ -201,38 +228,29 @@ namespace number {
 
 	/*	Miller Rabin :
 			Checks whether a certain integer is prime.
-			Usage : bool miller_rabin::solve (long long).
+			Usage : bool miller_rabin::solve (const long long &).
 	*/
 
 	struct miller_rabin {
 
-		const static int BASE[12] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37};
+		constexpr static int BASE[12] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37};
 
 		bool check (const long long &prime, const long long &base) {
 			long long number = prime - 1;
 			for (; ~number & 1; number >>= 1);
-			long long result = power_mod (base, number, prime);
-			for (; number != prime - 1 && result != 1 && result != prime - 1; number <<= 1) {
-				result = multiply_mod (result, result, prime);
-			}
+			long long result = llfpm (base, number, prime);
+			for (; number != prime - 1 && result != 1 && result != prime - 1; number <<= 1)
+				result = mul_mod (result, result, prime);
 			return result == prime - 1 || (number & 1) == 1;
 		}
 
 		bool solve (const long long &number) {
-			if (number < 2) {
-				return false;
-			}
-			if (number < 4) {
-				return true;
-			}
-			if (~number & 1) {
-				return false;
-			}
-			for (int i = 0; i < 12 && BASE[i] < number; ++i) {
-				if (!check (number, BASE[i])) {
+			if (number < 2) return false;
+			if (number < 4) return true;
+			if (~number & 1) return false;
+			for (int i = 0; i < 12 && BASE[i] < number; ++i)
+				if (!check (number, BASE[i]))
 					return false;
-				}
-			}
 			return true;
 		}
 
@@ -240,23 +258,23 @@ namespace number {
 
 	/*	Pollard Rho :
 			Factorizes an integer.
-			Usage : void pollard_rho::solve (long long, std::vector <long long> &).
+			Usage : void pollard_rho::solve (const long long &, std::vector <long long> &).
 	*/
 
 	struct pollard_rho {
 
-		long long pollard_rho (const long long &number, const long long &seed) {
+		miller_rabin is_prime;
+
+		long long factorize (const long long &number, const long long &seed) {
 			long long x = rand() % (number - 1) + 1, y = x;
 			for (int head = 1, tail = 2; ; ) {
-				x = multiply_mod (x, x, number);
-				x = add_mod (x, seed, number);
-				if (x == y) {
+				x = mul_mod (x, x, number);
+				x = (x + seed) % number;
+				if (x == y)
 					return number;
-				}
-				long long answer = std::__gcd (abs (x - y), number);
-				if (answer > 1 && answer < number) {
+				long long answer = gcd (abs (x - y), number);
+				if (answer > 1 && answer < number)
 					return answer;
-				}
 				if (++head == tail) {
 					y = x;
 					tail <<= 1;
@@ -266,15 +284,13 @@ namespace number {
 
 		void solve (const long long &number, std::vector<long long> &divisor) {
 			if (number > 1) {
-				if (miller_rabin (number)) {
-					divisor.push_back (number);
-				} else {
-					long long factor = number;
-					for (; factor >= number;
-					        factor = pollard_rho (number, rand() % (number - 1) + 1));
-					factorize (number / factor, divisor);
-					factorize (factor, divisor);
-				}
+				if (is_prime.solve (number)) divisor.push_back (number);
+			} else {
+				long long factor = number;
+				for (; factor >= number;
+				        factor = factorize (number, rand () % (number - 1) + 1));
+				solve (number / factor, divisor);
+				solve (factor, divisor);
 			}
 		}
 
@@ -283,6 +299,8 @@ namespace number {
 }
 
 #include <cstdio>
+
+using namespace number;
 
 int main () {
 	return 0;

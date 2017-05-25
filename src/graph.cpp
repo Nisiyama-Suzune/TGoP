@@ -4,8 +4,8 @@
 
 #include <algorithm>
 #include <array>
-#include <vector>
 #include <queue>
+#include <vector>
 
 namespace graph {
 
