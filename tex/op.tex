@@ -1,0 +1,58 @@
+\begin{center}
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		Precedence			&	Operator					&	Description												&	Associativity					\\
+		\hline
+		1					&	\ttfamily ::				&	Scope resolution										&	\multirow{6}{*}{Left-to-right}	\\
+		\cline{1-3}
+		\multirow{5}{*}{2}	&	\ttfamily a++ a--			&	Suffix/postfix increment and decrement					&									\\
+							&	\ttfamily type() type\{\}	&	Functional cast											&									\\
+							&	\ttfamily a()				&	Function call											&									\\
+							&	\ttfamily a[]				&	Subscript												&									\\
+							&	\ttfamily . ->				&	Member access											&									\\
+		\hline	
+		\multirow{9}{*}{3}	&	\ttfamily ++a --a			&	Prefix increment and decrement							&	\multirow{9}{*}{Right-to-left}	\\
+							&	\ttfamily +a -a				&	Unary plus and minus									&									\\
+							&	\ttfamily ! \~				&	Logical NOT and bitwise NOT								&									\\
+							&	\ttfamily (type)			&	C-style cast											&									\\
+							&	\ttfamily *a				&	Indirection (dereference)								&									\\
+							&	\ttfamily \&a				&	Address-of												&									\\
+							&	\ttfamily sizeof			&	Size-of													&									\\
+							&	\ttfamily new new[]			&	Dynamic memory allocation								&									\\
+							&	\ttfamily delete delete[]	&	Dynamic memory deallocation								&									\\
+		\hline
+		4					&	\ttfamily .* ->*			&	Pointer-to-member										&	\multirow{12}{*}{Left-to-right}	\\
+		\cline{1-3}
+		5					&	\ttfamily a*b a/b a\%b		&	Multiplication, division, and remainder					&									\\
+		\cline{1-3}
+		6					&	\ttfamily a+b a-b			&	Addition and subtraction								&									\\
+		\cline{1-3}
+		7					&	\ttfamily << >>				&	Bitwise left shift and right shift						&									\\
+		\cline{1-3}
+		\multirow{2}{*}{8}	&	\ttfamily < <=				&	For relational operators $<$ and $\leq$ respectively	&									\\
+							&	\ttfamily > >=				&	For relational operators $>$ and $\geq$ respectively	&									\\
+		\cline{1-3}
+		9					&	\ttfamily == !=				&	For relational operators $=$ and $\neq$ respectively	&									\\
+		\cline{1-3}
+		10					&	\ttfamily a\&b				&	Bitwise AND												&									\\
+		\cline{1-3}
+		11					&	\ttfamily \^{}				&	Bitwise XOR (exclusive or)								&									\\
+		\cline{1-3}
+		12					&	\ttfamily |					&	Bitwise OR (inclusive or)								&									\\
+		\cline{1-3}
+		13					&	\ttfamily \&\&				&	Logical AND												&									\\
+		\cline{1-3}
+		14					&	\ttfamily ||				&	Logical OR												&									\\
+		\hline
+		\multirow{6}{*}{15}	&	\ttfamily a?b:c				&	Ternary conditional										&	\multirow{6}{*}{Right-to-left}	\\
+							&	\ttfamily throw				&	throw operator											&									\\
+							&	\ttfamily =					&	Direct assignment										&									\\
+							&	\ttfamily += -=	*= /= \%=	&	Compound assignment by arithmetic operation				&									\\
+							&	\ttfamily <<= >>=			&	Compound assignment by bitwise shift					&									\\
+							&	\ttfamily \&= \^{}= |=		&	Compound assignment by bitwise AND, XOR, and OR			&									\\
+		\hline
+		16					&	\ttfamily ,					&	Comma													&	Left-to-right					\\
+		\hline
+	\end{tabular}
+\end{center}
+
