@@ -9,52 +9,61 @@
 
 namespace graph {
 
+	const int INF = 1E9;
+	
 	/*	Edge list:
 			Various kinds of edge list.
 	*/
 
-	const int MAXN = 1E5, MAXM = 1E5;
-
+	template <int MAXN = 1E5, int MAXM = 1E5>
 	struct edge_list {
 		int size;
 		int begin[MAXN], dest[MAXM], next[MAXM];
 		void clear (int n) {
 			size = 0;
-			for (int i = 0; i < n; i++)
-				begin[i] = -1;
+			std::fill (begin, begin + n, -1);
 		}
 		edge_list (int n = MAXN) {
 			clear (n);
 		}
 		void add_edge (int u, int v) {
-			dest[size] = v;
-			next[size] = begin[u];
-			begin[u] = size++;
+			dest[size] = v; next[size] = begin[u]; begin[u] = size++;
 		}
 	};
 
+	template <int MAXN = 1E5, int MAXM = 1E5>
 	struct flow_edge_list {
 		int size;
 		int begin[MAXN], dest[MAXM], next[MAXM], flow[MAXM], inv[MAXM];
 		void clear (int n) {
 			size = 0;
-			for (int i = 0; i < n; i++)
-				begin[i] = -1;
+			std::fill (begin, begin + n, -1);
 		}
 		flow_edge_list (int n = MAXN) {
 			clear (n);
 		}
 		void add_edge (int u, int v, int f) {
-			dest[size] = v;
-			next[size] = begin[u];
-			flow[size] = f;
-			inv[size] = size + 1;
-			begin[u] = size++;
-			dest[size] = u;
-			next[size] = begin[v];
-			flow[size] = 0;
-			inv[size] = size - 1;
-			begin[v] = size++;
+			dest[size] = v; next[size] = begin[u]; flow[size] = f; inv[size] = size + 1; begin[u] = size++;
+			dest[size] = u; next[size] = begin[v]; flow[size] = 0; inv[size] = size - 1; begin[v] = size++;
+		}
+	};
+
+	template <int MAXN = 1E5, int MAXM = 1E5>
+	struct cost_flow_edge_list {
+		int size;
+		int begin[MAXN], dest[MAXM], next[MAXM], cost[MAXM], flow[MAXM], inv[MAXM];
+		void clear (int n) {
+			size = 0;
+			std::fill (begin, begin + n, -1);
+		}
+		cost_flow_edge_list (int n = MAXN) {
+			clear (n);
+		}
+		void add_edge (int u, int v, int c, int f) {
+			dest[size] = v; next[size] = begin[u]; cost[size] = c;
+			flow[size] = f; inv[size] = size + 1; begin[u] = size++;
+			dest[size] = u; next[size] = begin[v]; cost[size] = c;
+			flow[size] = 0; inv[size] = size - 1; begin[v] = size++;
 		}
 	};
 
@@ -65,17 +74,16 @@ namespace graph {
 				Usage : solve () for maximum matching. The matching is in matchx and matchy.
 	*/
 
+	template <int MAXN = 1E5, int MAXM = 1E5>
 	struct hopcoft_carp {
 
-		static const int MAXN = 1E5;
-
 		int n, m;
-		edge_list &e;
+		edge_list <MAXN, MAXM> &e;
 
 		int matchx[MAXN], matchy[MAXN], level[MAXN];
 
 		bool dfs (int x) {
-			for (int i = e.begin[x]; i != -1; i = e.next[i]) {
+			for (int i = e.begin[x]; ~i; i = e.next[i]) {
 				int y = e.dest[i];
 				int w = matchy[y];
 				if (w == -1 || (level[x] + 1 == level[w] && dfs (w))) {
@@ -103,7 +111,7 @@ namespace graph {
 				}
 				for (int head = 0; head < (int) queue.size(); ++head) {
 					int x = queue[head];
-					for (int i = e.begin[x]; i != -1; i = e.next[i]) {
+					for (int i = e.begin[x]; ~i; i = e.next[i]) {
 						int y = e.dest[i];
 						int w = matchy[y];
 						if (w != -1 && level[w] < 0) {
@@ -129,10 +137,8 @@ namespace graph {
 				Usage : solve () for the minimum matching. The matching is in link.
 	*/
 
+	template <int MAXN = 500> 
 	struct kuhn_munkres {
-
-		static const int MAXN = 500;
-		static const int INF = 1E9;
 
 		int nx, ny;
 		int w[MAXN][MAXN];
@@ -193,9 +199,8 @@ namespace graph {
 				Note that k has to be even for the algorithm to work.
 	*/
 
+	template <int MAXN = 500>
 	struct weighted_match {
-
-		static const int MAXN = 500;
 
 		int k;
 		long long w[MAXN][MAXN];
@@ -269,10 +274,8 @@ namespace graph {
 					Obtain the matching with match[].
 	*/
 
+	template <int MAXN = 500>
 	struct weighted_blossom {
-
-		const static int INF = INT_MAX;
-		const static int MAXN = 500;
 
 		struct edge {
 			int u, v, w;
@@ -447,7 +450,7 @@ namespace graph {
 			}
 			return false;
 		}
-		std::pair<long long, int> solve() {
+		std::pair <long long, int> solve () {
 			std::fill (match + 1, match + n + 1, 0);
 			n_x = n;
 			int n_matches = 0;
@@ -474,21 +477,19 @@ namespace graph {
 	};
 
 	/*	Sparse graph maximum flow :
-			int isap::solve (const flow_edge_list &e, int n, int s, int t) :
+			int isap::solve (flow_edge_list &e, int n, int s, int t) :
 				e : edge list.
 				n : vertex size.
 				s : source.
 				t : sink.
 	*/
 
+	template <int MAXN = 1E3, int MAXM = 1E5>
 	struct isap {
-
-		const static int MAXN = 1E3;
-		const static int INF = 1E9;
 
 		int pre[MAXN], d[MAXN], gap[MAXN], cur[MAXN];
 
-		int solve (flow_edge_list &e, int n, int s, int t) {
+		int solve (flow_edge_list <MAXN, MAXM> &e, int n, int s, int t) {
 			std::fill (pre, pre + n + 1, 0);
 			std::fill (d, d + n + 1, 0);
 			std::fill (gap, gap + n + 1, 0);
@@ -497,7 +498,7 @@ namespace graph {
 			int u = pre[s] = s, v, maxflow = 0;
 			while (d[s] < n) {
 				v = n;
-				for (int i = cur[u]; i != -1; i = e.next[i])
+				for (int i = cur[u]; ~i; i = e.next[i])
 					if (e.flow[i] && d[u] == d[e.dest[i]] + 1) {
 						v = e.dest[i];
 						cur[u] = i;
@@ -523,7 +524,7 @@ namespace graph {
 					}
 				} else {
 					int mindist = n + 1;
-					for (int i = e.begin[u]; i != -1; i = e.next[i])
+					for (int i = e.begin[u]; ~i; i = e.next[i])
 						if (e.flow[i] && mindist > d[e.dest[i]]) {
 							mindist = d[e.dest[i]];
 							cur[u] = i;
@@ -539,19 +540,17 @@ namespace graph {
 	};
 
 	/*	Dense graph maximum flow :
-			int dinic::solve (const flow_edge_list &e, int n, int s, int t) :
+			int dinic::solve (flow_edge_list &e, int n, int s, int t) :
 				e : edge list.
 				n : vertex size.
 				s : source.
 				t : sink.
 	*/
 
+	template <int MAXN = 1E3, int MAXM = 1E5>
 	struct dinic {
 
-		const static int MAXN = 1E3;
-		const static int INF = 1E9;
-
-		flow_edge_list &e;
+		flow_edge_list <MAXN, MAXM> &e;
 		int n, s, t;
 
 		int d[MAXN], w[MAXN], q[MAXN];
@@ -583,12 +582,142 @@ namespace graph {
 			return ret;
 		}
 
-		void solve (flow_edge_list &e, int n, int s, int t) {
+		void solve (flow_edge_list <MAXN, MAXM> &e, int n, int s, int t) {
 			dinic::e = e; dinic::n = n; dinic::s = s; dinic::t = t;
 			while (bfs ()) {
 				for (int i = 0; i < n; i ++) w[i] = e.begin[i];
 				dfs (s, INF);
 			}
+		}
+
+	};
+
+	/*	Sparse graph minimum cost flow :
+			std::pair <int, int> minimum_cost_flow::solve (cost_flow_edge_list &e,
+			                                               int n, int s, int t) :
+				e : edge list.
+				n : vertex size.
+				s : source.
+				t : sink.
+				returns the flow and the cost respectively.
+	*/
+
+
+	template <int MAXN = 1E3, int MAXM = 1E5>
+	struct minimum_cost_flow {
+
+		cost_flow_edge_list <MAXN, MAXM> &e;
+		int n, source, target;
+		int prev[MAXN];
+		int dist[MAXN], occur[MAXN];
+
+		bool augment() {
+			std::vector <int> queue;
+			std::fill (dist, dist + n, INT_MAX);
+			std::fill (occur, occur + n, 0);
+			dist[source] = 0;
+			occur[source] = true;
+			queue.push_back (source);
+			for (int head = 0; head < (int)queue.size(); ++head) {
+				int x = queue[head];
+				for (int i = e.begin[x]; ~i; i = e.next[i]) {
+					int y = e.dest[i];
+					if (e.flow[i] && dist[y] > dist[x] + e.cost[i]) {
+						dist[y] = dist[x] + e.cost[i];
+						prev[y] = i;
+						if (!occur[y]) {
+							occur[y] = true;
+							queue.push_back (y);
+						}
+					}
+				}
+				occur[x] = false;
+			}
+			return dist[target] < INT_MAX;
+		}
+
+		std::pair <int, int> solve (cost_flow_edge_list <MAXN, MAXM> &e, int n, int s, int t) {
+			minimum_cost_flow::e = e; minimum_cost_flow::n = n;
+			source = s; target = t;
+			std::pair <int, int> answer = std::make_pair (0, 0);
+			while (augment()) {
+				int number = INT_MAX;
+				for (int i = target; i != source; i = e.dest[e.inv[prev[i]]]) {
+					number = std::min (number, e.flow[prev[i]]);
+				}
+				answer.first += number;
+				for (int i = target; i != source; i = e.dest[e.inv[prev[i]]]) {
+					e.flow[prev[i]] -= number;
+					e.flow[e.inv[prev[i]]] += number;
+					answer.second += number * e.cost[prev[i]];
+				}
+			}
+			return answer;
+		}
+
+	};
+
+	/*	Dense graph minimum cost flow :
+			std::pair <int, int> zkw_flow::solve (cost_flow_edge_list &e,
+			                                      int n, int s, int t) :
+				e : edge list.
+				n : vertex size.
+				s : source.
+				t : sink.
+				returns the flow and the cost respectively.
+	*/
+
+	template <int MAXN = 1E3, int MAXM = 1E5>
+	struct zkw_flow {
+
+		cost_flow_edge_list <MAXN, MAXM> &e;
+		int n, s, t, totFlow, totCost;
+		int dis[MAXN], slack[MAXN], visit[MAXN];
+
+		int modlable() {
+			int delta = INF;
+			for (int i = 0; i < n; i++) {
+				if (!visit[i] && slack[i] < delta) delta = slack[i];
+				slack[i] = INF;
+			}
+			if (delta == INF) return 1;
+			for (int i = 0; i < n; i++) if (visit[i]) dis[i] += delta;
+			return 0;
+		}
+
+		int dfs (int x, int flow) {
+			if (x == t) {
+				totFlow += flow;
+				totCost += flow * (dis[s] - dis[t]);
+				return flow;
+			}
+			visit[x] = 1;
+			int left = flow;
+			for (int i = e.begin[x]; ~i; i = e.next[i])
+				if (e.flow[i] > 0 && !visit[e.dest[i]]) {
+					int y = e.dest[i];
+					if (dis[y] + e.cost[i] == dis[x]) {
+						int delta = dfs (y, std::min (left, e.flow[i]));
+						e.flow[i] -= delta;
+						e.flow[e.inv[i]] += delta;
+						left -= delta;
+						if (!left) { visit[x] = false; return flow; }
+					} else
+						slack[y] = std::min (slack[y], dis[y] + e.cost[i] - dis[x]);
+				}
+			return flow - left;
+		}
+
+		std::pair <int, int> solve (cost_flow_edge_list <MAXN, MAXM> &e, int n, int s, int t) {
+			zkw_flow::e = e; zkw_flow::n = n; zkw_flow::s = s; zkw_flow::t = t;
+			totFlow = 0; totCost = 0;
+			std::fill (dis + 1, dis + t + 1, 0);
+			do {
+				do {
+					std::fill (visit + 1, visit + t + 1, 0);
+				} while (dfs (s, INF));
+			} while (!modlable ());
+			return std::make_pair (totFlow, totCost);
 		}
 
 	};

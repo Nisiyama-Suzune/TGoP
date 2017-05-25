@@ -9,6 +9,8 @@
 
 namespace number {
 
+	const double PI = acos (-1);
+
 	/*	Basic operation :
 			long long inverse (const long long &x, const long long &mod) :
 				returns the inverse of x modulo mod.
@@ -81,10 +83,8 @@ namespace number {
 				transforms back when f = 1.
 	*/
 
+	template <int MAXN = 1E6>
 	struct dft {
-
-		constexpr static int MAXN = 1E6;
-		constexpr static double PI = acos (-1);
 
 		typedef std::complex <double> complex;
 
@@ -130,9 +130,8 @@ namespace number {
 			makes up the results a from module 3 primes to a certain module mod.
 	*/
 
+	template <int MAXN = 1E6>
 	struct ntt {
-
-		constexpr static int MAXN = 1E6;
 
 		void main (int *a, int n, int f, int mod, int prt) {
 			for (register int i = 0, j = 0; i < n; i++) {
@@ -164,7 +163,7 @@ namespace number {
 			}
 		}
 
-		constexpr static int MOD[3] = {1045430273, 1051721729, 1053818881}, PRT[3] = {3, 6, 7};
+		int MOD[3] = {1045430273, 1051721729, 1053818881}, PRT[3] = {3, 6, 7};
 
 		int crt (int *a, int mod) {
 			static int inv[3][3];
@@ -205,8 +204,8 @@ namespace number {
 			return (a % b + b) % b;
 		}
 
-		bool solve (const std::vector <std::pair<long long, long long> > &input,
-		            std::pair<long long, long long> &output) {
+		bool solve (const std::vector <std::pair <long long, long long> > &input,
+		            std::pair <long long, long long> &output) {
 			output = std::make_pair (1, 1);
 			for (int i = 0; i < (int) input.size (); ++i) {
 				long long number, useless;
@@ -233,7 +232,7 @@ namespace number {
 
 	struct miller_rabin {
 
-		constexpr static int BASE[12] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37};
+		int BASE[12] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37};
 
 		bool check (const long long &prime, const long long &base) {
 			long long number = prime - 1;
