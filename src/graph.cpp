@@ -10,7 +10,7 @@
 namespace graph {
 
 	const int INF = 1E9;
-	
+
 	/*	Edge list:
 			Various kinds of edge list.
 	*/
@@ -67,10 +67,50 @@ namespace graph {
 		}
 	};
 
+	/*	Tarjan :
+			returns strong-connected components.
+			tarjan::solve (edge_list &) :
+				component[] gives which component a vertex belongs to.
+	*/
+
+	template <int MAXN = 1E5, int MAXM = 1E5>
+	struct tarjan {
+
+		int component[MAXN], component_size;
+
+		int dfn[MAXN], low[MAXN], vis[MAXN], s[MAXN], s_s, ins[MAXN], ind;
+
+		void dfs (edge_list <MAXN, MAXM> &e, int u) {
+			dfn[u] = low[u] = ind++;
+			vis[u] = ins[u] = 1; s[s_s++] = u;
+			for (int i = e.begin[u]; ~i; i = e.next[i]) {
+				if (!vis[e.dest[i]]) {
+					dfs (e, e.dest[i]);
+					low[u] = std::min (low[u], low[e.dest[i]]);
+				} else if (ins[e.dest[i]])
+					low[u] = std::min (low[u], dfn[e.dest[i]]);
+			}
+			if (dfn[u] == low[u]) {
+				do {
+					component[s[--s_s]] = component_size;
+					ins[s[s_s]] = 0;
+				} while (s[s_s] != u);
+				component_size++;
+			}
+		}
+
+		void solve (edge_list <MAXN, MAXM> &e) {
+			std::fill (vis, vis + MAXN, 0);
+			std::fill (ins, ins + MAXN, 0);
+			s_s = ind = 0;
+			dfs (e, 0);
+		}
+
+	};
+
 	/*	Hopcoft-Carp algorithm :
 			maximum matching with complexity O (m * n^0.5).
 			struct hopcoft_carp :
-				Initialize : pass n, m as the size of both vertex sets, e as the reference of the edge_list.
 				Usage : solve () for maximum matching. The matching is in matchx and matchy.
 	*/
 
@@ -78,15 +118,14 @@ namespace graph {
 	struct hopcoft_carp {
 
 		int n, m;
-		edge_list <MAXN, MAXM> &e;
 
 		int matchx[MAXN], matchy[MAXN], level[MAXN];
 
-		bool dfs (int x) {
+		bool dfs (edge_list <MAXN, MAXM> &e, int x) {
 			for (int i = e.begin[x]; ~i; i = e.next[i]) {
 				int y = e.dest[i];
 				int w = matchy[y];
-				if (w == -1 || (level[x] + 1 == level[w] && dfs (w))) {
+				if (w == -1 || (level[x] + 1 == level[w] && dfs (e, w))) {
 					matchx[x] = y;
 					matchy[y] = x;
 					return true;
@@ -96,7 +135,7 @@ namespace graph {
 			return false;
 		}
 
-		int solve () {
+		int solve (edge_list <MAXN, MAXM> &e, int n, int m) {
 			std::fill (matchx, matchx + n, -1);
 			std::fill (matchy, matchy + m, -1);
 			for (int answer = 0; ; ) {
@@ -122,7 +161,7 @@ namespace graph {
 				}
 				int delta = 0;
 				for (int i = 0; i < n; ++i)
-					if (matchx[i] == -1 && dfs (i)) delta++;
+					if (matchx[i] == -1 && dfs (e, i)) delta++;
 				if (delta == 0) return answer;
 				else answer += delta;
 			}
@@ -137,7 +176,7 @@ namespace graph {
 				Usage : solve () for the minimum matching. The matching is in link.
 	*/
 
-	template <int MAXN = 500> 
+	template <int MAXN = 500>
 	struct kuhn_munkres {
 
 		int nx, ny;
@@ -550,12 +589,11 @@ namespace graph {
 	template <int MAXN = 1E3, int MAXM = 1E5>
 	struct dinic {
 
-		flow_edge_list <MAXN, MAXM> &e;
 		int n, s, t;
 
 		int d[MAXN], w[MAXN], q[MAXN];
 
-		int bfs() {
+		int bfs (flow_edge_list <MAXN, MAXM> &e) {
 			for (int i = 0; i < n; i ++) d[i] = -1;
 			int l, r;
 			q[l = r = 0] = s, d[s] = 0;
@@ -565,13 +603,13 @@ namespace graph {
 			return d[t] > -1 ? 1 : 0;
 		}
 
-		int dfs (int u, int ext) {
+		int dfs (flow_edge_list <MAXN, MAXM> &e, int u, int ext) {
 			if (u == t) return ext;
 			int k = w[u], ret = 0;
 			for (; k > -1; k = e.next[k], w[u] = k) {
 				if (ext == 0) break;
 				if (d[e.dest[k]] == d[u] + 1 && e.flow[k] > 0) {
-					int flow = dfs (e.dest[k], std::min (e.flow[k], ext));
+					int flow = dfs (e, e.dest[k], std::min (e.flow[k], ext));
 					if (flow > 0) {
 						e.flow[k] -= flow, e.flow[e.inv[k]] += flow;
 						ret += flow, ext -= flow;
@@ -583,10 +621,10 @@ namespace graph {
 		}
 
 		void solve (flow_edge_list <MAXN, MAXM> &e, int n, int s, int t) {
-			dinic::e = e; dinic::n = n; dinic::s = s; dinic::t = t;
-			while (bfs ()) {
+			dinic::n = n; dinic::s = s; dinic::t = t;
+			while (bfs (e)) {
 				for (int i = 0; i < n; i ++) w[i] = e.begin[i];
-				dfs (s, INF);
+				dfs (e, s, INF);
 			}
 		}
 
@@ -606,14 +644,13 @@ namespace graph {
 	template <int MAXN = 1E3, int MAXM = 1E5>
 	struct minimum_cost_flow {
 
-		cost_flow_edge_list <MAXN, MAXM> &e;
 		int n, source, target;
 		int prev[MAXN];
 		int dist[MAXN], occur[MAXN];
 
-		bool augment() {
+		bool augment(cost_flow_edge_list <MAXN, MAXM> &e) {
 			std::vector <int> queue;
-			std::fill (dist, dist + n, INT_MAX);
+			std::fill (dist, dist + n, INF);
 			std::fill (occur, occur + n, 0);
 			dist[source] = 0;
 			occur[source] = true;
@@ -633,15 +670,15 @@ namespace graph {
 				}
 				occur[x] = false;
 			}
-			return dist[target] < INT_MAX;
+			return dist[target] < INF;
 		}
 
 		std::pair <int, int> solve (cost_flow_edge_list <MAXN, MAXM> &e, int n, int s, int t) {
-			minimum_cost_flow::e = e; minimum_cost_flow::n = n;
+			minimum_cost_flow::n = n;
 			source = s; target = t;
 			std::pair <int, int> answer = std::make_pair (0, 0);
-			while (augment()) {
-				int number = INT_MAX;
+			while (augment (e)) {
+				int number = INF;
 				for (int i = target; i != source; i = e.dest[e.inv[prev[i]]]) {
 					number = std::min (number, e.flow[prev[i]]);
 				}
@@ -670,7 +707,6 @@ namespace graph {
 	template <int MAXN = 1E3, int MAXM = 1E5>
 	struct zkw_flow {
 
-		cost_flow_edge_list <MAXN, MAXM> &e;
 		int n, s, t, totFlow, totCost;
 		int dis[MAXN], slack[MAXN], visit[MAXN];
 
@@ -685,7 +721,7 @@ namespace graph {
 			return 0;
 		}
 
-		int dfs (int x, int flow) {
+		int dfs (cost_flow_edge_list <MAXN, MAXM> &e, int x, int flow) {
 			if (x == t) {
 				totFlow += flow;
 				totCost += flow * (dis[s] - dis[t]);
@@ -697,7 +733,7 @@ namespace graph {
 				if (e.flow[i] > 0 && !visit[e.dest[i]]) {
 					int y = e.dest[i];
 					if (dis[y] + e.cost[i] == dis[x]) {
-						int delta = dfs (y, std::min (left, e.flow[i]));
+						int delta = dfs (e, y, std::min (left, e.flow[i]));
 						e.flow[i] -= delta;
 						e.flow[e.inv[i]] += delta;
 						left -= delta;
@@ -709,13 +745,13 @@ namespace graph {
 		}
 
 		std::pair <int, int> solve (cost_flow_edge_list <MAXN, MAXM> &e, int n, int s, int t) {
-			zkw_flow::e = e; zkw_flow::n = n; zkw_flow::s = s; zkw_flow::t = t;
+			zkw_flow::n = n; zkw_flow::s = s; zkw_flow::t = t;
 			totFlow = 0; totCost = 0;
 			std::fill (dis + 1, dis + t + 1, 0);
 			do {
 				do {
 					std::fill (visit + 1, visit + t + 1, 0);
-				} while (dfs (s, INF));
+				} while (dfs (e, s, INF));
 			} while (!modlable ());
 			return std::make_pair (totFlow, totCost);
 		}
