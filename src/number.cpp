@@ -257,7 +257,7 @@ namespace number {
 
 	/*	Pollard Rho :
 			Factorizes an integer.
-			Usage : void pollard_rho::solve (const long long &, std::vector <long long> &).
+			Usage : std::vector <long long> pollard_rho::solve (const long long &).
 	*/
 
 	struct pollard_rho {
@@ -281,16 +281,24 @@ namespace number {
 			}
 		}
 
-		void solve (const long long &number, std::vector<long long> &divisor) {
-			if (number > 1) {
-				if (is_prime.solve (number)) divisor.push_back (number);
-			} else {
-				long long factor = number;
-				for (; factor >= number;
-				        factor = factorize (number, rand () % (number - 1) + 1));
-				solve (number / factor, divisor);
-				solve (factor, divisor);
+		void search (const long long &number, std::vector<long long> &divisor) {
+			if (number > 1)  {
+				if (is_prime.solve (number))
+					divisor.push_back (number);
+				else {
+					long long factor = number;
+					for (; factor >= number;
+					        factor = factorize (number, rand () % (number - 1) + 1));
+					search (number / factor, divisor);
+					search (factor, divisor);
+				}
 			}
+		}
+
+		std::vector <long long> solve (const long long &number) {
+			std::vector <long long> ans;
+			search (number, ans);
+			return ans;
 		}
 
 	};
