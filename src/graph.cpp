@@ -2,10 +2,7 @@
 		Most algorithms on a graph.
 */
 
-#include <algorithm>
-#include <array>
-#include <queue>
-#include <vector>
+#include <bits/stdc++.h>
 
 namespace graph {
 
@@ -28,6 +25,22 @@ namespace graph {
 		}
 		void add_edge (int u, int v) {
 			dest[size] = v; next[size] = begin[u]; begin[u] = size++;
+		}
+	};
+
+	template <int MAXN = 1E5, int MAXM = 1E5>
+	struct cost_edge_list {
+		int size;
+		int begin[MAXN], dest[MAXM], next[MAXM], cost[MAXM];
+		void clear (int n) {
+			size = 0;
+			std::fill (begin, begin + n, -1);
+		}
+		cost_edge_list (int n = MAXN) {
+			clear (n);
+		}
+		void add_edge (int u, int v, int c) {
+			dest[size] = v; next[size] = begin[u]; cost[size] = c; begin[u] = size++;
 		}
 	};
 
@@ -67,9 +80,96 @@ namespace graph {
 		}
 	};
 
+	/*	SPFA :
+			Shortest path fast algorithm. (with SLF and LLL)
+			bool spfa::solve (const cost_edge_list &e, int n, int s) :
+				dist[] gives the distance from s.
+				last[] gives the previous vertex.
+	*/
+
+	template <int MAXN = 1E5, int MAXM = 1E5>
+	struct spfa {
+
+		int dist[MAXN], last[MAXN];
+
+		int queue[MAXN], cnt[MAXN];
+		bool inq[MAXN];
+
+		bool solve (const cost_edge_list <MAXN, MAXM> &e, int n, int s) {
+			std::fill (dist, dist + MAXN, INF);
+			std::fill (last, last + MAXN, -1);
+			std::fill (cnt, cnt + MAXN, 0);
+			std::fill (inq, inq + MAXN, false);
+			int p = 0, q = 1, size = 1;
+			long long avg = 0;
+			dist[s] = 0; queue[0] = s; inq[s] = true;
+			while (p != q) {
+				int n = queue[p]; p = (p + 1) % MAXN;
+				if (1LL * dist[n] * size > avg) {
+					queue[q] = n;
+					q = (q + 1) % MAXN;
+					continue;
+				}
+				inq[n] = false; avg -= dist[n]; --size;
+				for (int i = e.begin[n]; ~i; i = e.next[i]) {
+					int v = e.dest[i];
+					if (dist[v] > dist[n] + e.cost[i]) {
+						dist[v] = dist[n] + e.cost[i]; last[v] = n;
+						if (!inq[v]) {
+							if (++cnt[v] > n) return false;
+							inq[v] = true; avg += dist[v]; --size;
+							if (dist[v] < dist[queue[p]])
+								queue[p = (p + MAXN - 1) % MAXN] = v;
+							else {
+								queue[q] = v;
+								q = (q + 1) % MAXN;
+							}
+						}
+					}
+				}
+			}
+			return true;
+		}
+
+	};
+
+	/*	Dijkstra :
+			Shortest path algorithm.
+	*/
+
+	template <int MAXN = 1E5, int MAXM = 1E5>
+	struct dijkstra {
+
+		int dist[MAXN], last[MAXN];
+
+		bool vis[MAXN];
+
+		void solve (const cost_edge_list <MAXN, MAXM> &e, int s) {
+			std::priority_queue <std::pair <int, int>, std::vector <std::pair <int, int> >,
+			    std::greater <std::pair <int, int> > > queue;
+			std::fill (dist, dist + MAXN, INF);
+			std::fill (last, last + MAXN, -1);
+			std::fill (vis, vis + MAXN, false);
+			dist[s] = 0;
+			queue.push (std::make_pair (0, s));
+			while (!queue.empty ()) {
+				int n = queue.top ().second; queue.pop (); vis[n] = true;
+				for (int i = e.begin[n]; ~i; i = e.next[i]) {
+					int v = e.dest[i];
+					if (dist[v] > dist[n] + e.cost[i]) {
+						dist[v] = dist[n] + e.cost[i]; last[v] = n;
+						queue.push (std::make_pair (dist[v], v));
+					}
+				}
+				while (!queue.empty () && vis[queue.top ().second]) queue.pop ();
+			}
+		}
+
+	};
+
 	/*	Tarjan :
 			returns strong-connected components.
-			tarjan::solve (edge_list &) :
+			void tarjan::solve (const edge_list &) :
 				component[] gives which component a vertex belongs to.
 	*/
 
@@ -80,7 +180,7 @@ namespace graph {
 
 		int dfn[MAXN], low[MAXN], vis[MAXN], s[MAXN], s_s, ins[MAXN], ind;
 
-		void dfs (edge_list <MAXN, MAXM> &e, int u) {
+		void dfs (const edge_list <MAXN, MAXM> &e, int u) {
 			dfn[u] = low[u] = ind++;
 			vis[u] = ins[u] = 1; s[s_s++] = u;
 			for (int i = e.begin[u]; ~i; i = e.next[i]) {
@@ -99,7 +199,7 @@ namespace graph {
 			}
 		}
 
-		void solve (edge_list <MAXN, MAXM> &e) {
+		void solve (const edge_list <MAXN, MAXM> &e) {
 			std::fill (vis, vis + MAXN, 0);
 			std::fill (ins, ins + MAXN, 0);
 			s_s = ind = 0;
@@ -648,7 +748,7 @@ namespace graph {
 		int prev[MAXN];
 		int dist[MAXN], occur[MAXN];
 
-		bool augment(cost_flow_edge_list <MAXN, MAXM> &e) {
+		bool augment (cost_flow_edge_list <MAXN, MAXM> &e) {
 			std::vector <int> queue;
 			std::fill (dist, dist + n, INF);
 			std::fill (occur, occur + n, 0);
@@ -759,8 +859,6 @@ namespace graph {
 	};
 
 }
-
-#include <cstdio>
 
 using namespace graph;
 

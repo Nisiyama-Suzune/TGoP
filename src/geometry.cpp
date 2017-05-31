@@ -3,9 +3,7 @@
 		Most templates of points, lines and circles on a 2D plane.
 */
 
-#include <cmath>
-#include <vector>
-#include <algorithm>
+#include <bits/stdc++.h>
 
 namespace geometry {
 
@@ -216,11 +214,13 @@ namespace geometry {
 		double cosc = dot (b - c, a - c) / ca / bc;
 		double sq3 = PI / 3.0;
 		point mid;
-		if (sgn (det (b - a, c - a)) < 0) swap (b, c);
 		if (sgn (cosa + 0.5) < 0) mid = a;
 		else if (sgn (cosb + 0.5) < 0) mid = b;
 		else if (sgn (cosc + 0.5) < 0) mid = c;
-		else mid = line_intersect (line (a, c + (b - c).rotate (sq3)), line (c, b + (a - b).rotate (sq3)));
+		else if (sgn (det (b - a, c - a)) < 0)
+			mid = line_intersect (line (a, b + (c - b).rotate (sq3)), line (b, c + (a - c).rotate (sq3)));
+		else
+			mid = line_intersect (line (a, c + (b - c).rotate (sq3)), line (c, b + (a - b).rotate (sq3)));
 		return mid;
 	}
 
@@ -534,11 +534,11 @@ namespace geometry {
 			else return 1;
 		}
 
-		bool circmp (const cp &u, const cp &v) {
+		static bool circmp (const cp &u, const cp &v) {
 			return sgn (u.r - v.r) < 0;
 		}
 
-		bool cmp (const cp &u, const cp &v) {
+		static bool cmp (const cp &u, const cp &v) {
 			if (sgn (u.angle - v.angle)) return u.angle < v.angle;
 			return u.d > v.d;
 		}
@@ -593,9 +593,6 @@ namespace geometry {
 	};
 
 }
-
-
-#include <cstdio>
 
 using namespace geometry;
 

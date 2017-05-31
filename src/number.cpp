@@ -2,10 +2,7 @@
 	Deals with various aspects of integer, division, modulo, etc.
 */
 
-#include <cstdlib>
-#include <cmath>
-#include <complex>
-#include <vector>
+#include <bits/stdc++.h>
 
 namespace number {
 
@@ -263,6 +260,7 @@ namespace number {
 	struct pollard_rho {
 
 		miller_rabin is_prime;
+		const long long threshold = 13E9;
 
 		long long factorize (const long long &number, const long long &seed) {
 			long long x = rand() % (number - 1) + 1, y = x;
@@ -297,15 +295,24 @@ namespace number {
 
 		std::vector <long long> solve (const long long &number) {
 			std::vector <long long> ans;
-			search (number, ans);
+			if (number > threshold)
+				search (number, ans);
+			else {
+				long long rem = number;
+				for (long long i = 2; i * i <= rem; ++i)
+					if (number % i)
+						++i;
+					else {
+						ans.push_back (i);
+						rem %= i;
+					}
+			}
 			return ans;
 		}
 
 	};
 
 }
-
-#include <cstdio>
 
 using namespace number;
 

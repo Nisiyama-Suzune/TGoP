@@ -1,10 +1,15 @@
 \documentclass[a4paper]{report}
 
+\usepackage{amsmath}
 \usepackage{courier}
 \usepackage[margin=1cm, includefoot]{geometry}
 \usepackage{listings}
+\usepackage{mathtools}
 \usepackage{multirow}
 \usepackage{xcolor}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
 \lstset {
 	language=C++,
@@ -22,22 +27,25 @@
 
 \begin{document}
 	\maketitle
-	\chapter{The Trial of Number Theory}
+	\chapter{The trial of number theory}
 		\lstinputlisting{../src/number.cpp}
-	\chapter{The Trial of Geometry}
+	\chapter{The trial of geometry}
 		\lstinputlisting{../src/geometry.cpp}
-	\chapter{The Trial of Graph}
+	\chapter{The trial of graph}
 		\lstinputlisting{../src/graph.cpp}
-	\chapter{The Trial of String}
+	\chapter{The trial of string}
 		\lstinputlisting{../src/string.cpp}
 	\chapter{Reference}
 		\section{vimrc}
 			\input{vimrc}
-		\section{Java Reference}
+		\section{Java reference}
 			\lstinputlisting[language=Java]{../src/Main.java}
-		\section{Operator Precedence}
+		\section{Operator precedence}
 			\input{op}
 		\section{Hacks}
 			\lstinputlisting{../src/hack.cpp}
+		\section{Math reference}
+			\subsection{Prefix sum of multiplicative functions}
+				\input{multiplicative_function}
 \end{document}
 
