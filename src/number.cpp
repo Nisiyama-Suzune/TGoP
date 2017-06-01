@@ -187,7 +187,7 @@ namespace number {
 
 	};
 
-	/*	Chinese Remainder Theroem :
+	/*	Chinese remainder theroem :
 			bool crt::solve (const std::vector <std::pair<long long, long long> > &input,
 			                std::pair<long long, long long> &output) :
 				solves for an integer set x = output.first + k * output.second

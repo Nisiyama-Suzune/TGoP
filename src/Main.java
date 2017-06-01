@@ -1,5 +1,5 @@
 /*	Java reference :
-		References on Java IO, Structures, etc.
+		References on Java IO, structures, etc.
 */
 
 import java.io.*;
@@ -117,7 +117,7 @@ public class Main {
 
 /*	Another way to implement is to use Comparable.
 	However, equalTo and hashCode must be rewritten.
-	Otherwise, containers may fail and give strange answers.
+	Otherwise, containers may fail.
 	Example :
 
 	public static class Point implements Comparable <Point> {

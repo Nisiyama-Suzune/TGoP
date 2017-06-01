@@ -168,7 +168,7 @@ namespace graph {
 	};
 
 	/*	Tarjan :
-			returns strong-connected components.
+			returns strongly connected components.
 			void tarjan::solve (const edge_list &) :
 				component[] gives which component a vertex belongs to.
 	*/
@@ -273,7 +273,7 @@ namespace graph {
 			weighted maximum matching algorithm. Complexity O (N^3).
 			struct kuhn_munkres :
 				Initialize : pass nx, ny as the size of both sets, w as the weight matrix.
-				Usage : solve () for the minimum matching. The matching is in link.
+				Usage : solve () for the minimum matching. The exact matching is in link[].
 	*/
 
 	template <int MAXN = 500>
@@ -389,7 +389,7 @@ namespace graph {
 					}
 				}
 				if (!flag) {
-					if (++cnt >= 1) break;
+					if (++cnt >= 2) break;
 					std::random_shuffle (p, p + k);
 				}
 			}
@@ -398,6 +398,7 @@ namespace graph {
 				ans += w[i][match[i]];
 			return ans / 2;
 		}
+
 	};
 
 	/*	Weighted blossom algorithm (vfleaking ver.) :
@@ -613,6 +614,7 @@ namespace graph {
 				for (int v = 1; v <= n; ++v)
 					g[u][v] = edge (u, v, 0);
 		}
+		
 	};
 
 	/*	Sparse graph maximum flow :

@@ -8,7 +8,17 @@ The Grimoire of Programming (TGoP) is a project intended to provide necessary te
 
 ### Number Theory
 
-Check how ntt::crt works.
-
 ### Geometry
+
+### Graph
+
+### String
+
+Add Manacher.
+
+Add AC automaton.
+
+### Reference
+
+Add antiderivative formulas.
 

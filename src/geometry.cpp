@@ -7,7 +7,7 @@
 
 namespace geometry {
 
-	/*	Basic constant & function :
+	/*	Constants & basic functions :
 			EPS : fixes the possible error of data.
 				i.e. x == y iff |x - y| < EPS.
 			PI : the value of PI.
@@ -106,7 +106,7 @@ namespace geometry {
 		double length () const { return dis (s, t); }
 	};
 
-	/*	Point & line interaction :
+	/*	Point & line interactions :
 			bool point_on_line (const point &a, const line &b) : checks if a is on b.
 			bool intersect_judgement (const line &a, const line &b) : checks if segment a and b intersect.
 			point line_intersect (const line &a, const line &b) : returns the intersection of a and b.

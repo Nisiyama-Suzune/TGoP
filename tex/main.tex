@@ -23,20 +23,81 @@
 
 \title{The Grimoire of Programming}
 \date{}
-\author{}
+\author{Suzune Nisiyama}
 
 \begin{document}
 	\maketitle
-	\chapter{The trial of number theory}
-		\lstinputlisting{../src/number.cpp}
-	\chapter{The trial of geometry}
-		\lstinputlisting{../src/geometry.cpp}
-	\chapter{The trial of graph}
-		\lstinputlisting{../src/graph.cpp}
-	\chapter{The trial of string}
-		\lstinputlisting{../src/string.cpp}
+	\tableofcontents
+	\chapter{Trial of number theory}
+		\section{Constants and basic functions}
+			\lstinputlisting[firstline=9,lastline=74]{../src/number.cpp}
+		\section{Discrete Fourier transform}
+			\lstinputlisting[firstline=76,lastline=118]{../src/number.cpp}
+		\section{Number-theoretic transform}
+			\lstinputlisting[firstline=120,lastline=188]{../src/number.cpp}
+		\section{Chinese remainder theorem}
+			\lstinputlisting[firstline=190,lastline=223]{../src/number.cpp}
+		\section{Miller Rabin primality test}
+			\lstinputlisting[firstline=225,lastline=253]{../src/number.cpp}
+		\section{Pollard's Rho algorithm}
+			\lstinputlisting[firstline=255,lastline=313]{../src/number.cpp}
+	\chapter{Trial of geometry}
+		\section{Constants and basic functions}
+			\lstinputlisting[firstline=10,lastline=24]{../src/geometry.cpp}
+		\section{Point class}
+			\lstinputlisting[firstline=26,lastline=96]{../src/geometry.cpp}
+		\section{Line class}
+			\lstinputlisting[firstline=98,lastline=107]{../src/geometry.cpp}
+		\section{Interactions between points and lines}
+			\lstinputlisting[firstline=109,lastline=181]{../src/geometry.cpp}
+		\section{Centers of a triangle}
+			\lstinputlisting[firstline=183,lastline=200]{../src/geometry.cpp}
+		\section{Fermat point}
+			\lstinputlisting[firstline=202,lastline=225]{../src/geometry.cpp}
+		\section{Circle class}
+			\lstinputlisting[firstline=227,lastline=243]{../src/geometry.cpp}
+		\section{Interactions of circles}
+			\lstinputlisting[firstline=245,lastline=297]{../src/geometry.cpp}
+		\section{Convex hull}
+			\lstinputlisting[firstline=299,lastline=335]{../src/geometry.cpp}
+		\section{Minimum circle}
+			\lstinputlisting[firstline=337,lastline=355]{../src/geometry.cpp}
+		\section{Half plane intersection}
+			\lstinputlisting[firstline=357,lastline=440]{../src/geometry.cpp}
+		\section{Intersection of a polygon and a circle}
+			\lstinputlisting[firstline=442,lastline=492]{../src/geometry.cpp}
+		\section{Union of circles}	
+			\lstinputlisting[firstline=494,lastline=593]{../src/geometry.cpp}
+	\chapter{Trial of graph}
+		\section{Constants and edge lists}
+			\lstinputlisting[firstline=9,lastline=81]{../src/graph.cpp}
+		\section{SPFA improved}
+			\lstinputlisting[firstline=83,lastline=134]{../src/graph.cpp}
+		\section{Dijkstra's shortest path algorithm}
+			\lstinputlisting[firstline=136,lastline=168]{../src/graph.cpp}
+		\section{Tarjan}
+			\lstinputlisting[firstline=170,lastline=209]{../src/graph.cpp}
+		\section{Hopcoft-Carp}
+			\lstinputlisting[firstline=211,lastline=270]{../src/graph.cpp}
+		\section{Kuhn-Munkres}
+			\lstinputlisting[firstline=272,lastline=332]{../src/graph.cpp}
+		\section{Stochastic weighted maximum matching}
+			\lstinputlisting[firstline=334,lastline=402]{../src/graph.cpp}
+		\section{Weighted blossom (vfleaking ver.)}	
+			\lstinputlisting[firstline=404,lastline=618]{../src/graph.cpp}
+		\section{Maximum flow}
+			\lstinputlisting[firstline=620,lastline=733]{../src/graph.cpp}
+		\section{Minimum cost flow}
+			\lstinputlisting[firstline=735,lastline=861]{../src/graph.cpp}
+	\chapter{Trial of string}
+		\section{KMP}
+			\lstinputlisting[firstline=9,lastline=42]{../src/string.cpp}
+		\section{Suffix automaton}
+			\lstinputlisting[firstline=44,lastline=107]{../src/string.cpp}
+		\section{Palindromic tree}
+			\lstinputlisting[firstline=110,lastline=166]{../src/string.cpp}
 	\chapter{Reference}
-		\section{vimrc}
+		\section{Vimrc}
 			\input{vimrc}
 		\section{Java reference}
 			\lstinputlisting[language=Java]{../src/Main.java}
