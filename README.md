@@ -8,6 +8,8 @@ The Grimoire of Programming (TGoP) is a project intended to provide necessary te
 
 ### Number Theory
 
+Add Simpson
+
 ### Geometry
 
 ### Graph

@@ -6,7 +6,11 @@
 \usepackage{listings}
 \usepackage{mathtools}
 \usepackage{multirow}
+\usepackage{physics}
 \usepackage{xcolor}
+
+%\setsecnumdepth{subsubsection}
+\setcounter{secnumdepth}{3}
 
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
@@ -104,8 +108,18 @@
 		\section{Operator precedence}
 			\input{op}
 		\section{Hacks}
-			\lstinputlisting{../src/hack.cpp}
+			\subsection{Formating long long in scanf \& printf}
+				\lstinputlisting[firstline=7,lastline=11]{../src/hack.cpp}
+			\subsection{Optimizing}
+				\lstinputlisting[firstline=15,lastline=16]{../src/hack.cpp}
+			\subsection{Larger stack}
+				\subsubsection{C++}
+					\lstinputlisting[firstline=22,lastline=22]{../src/hack.cpp}
+				\subsubsection{G++}
+					\lstinputlisting[firstline=26,lastline=28]{../src/hack.cpp}
 		\section{Math reference}
+			\subsection{Integration table}
+				\input{integration}
 			\subsection{Prefix sum of multiplicative functions}
 				\input{multiplicative_function}
 \end{document}
