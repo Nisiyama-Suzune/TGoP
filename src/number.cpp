@@ -18,7 +18,7 @@ namespace number {
 			             long long &x, long long &y) :
 				solves for ax + by = gcd (a, b).
 			long long gcd (const long long &a, const long long &b) :
-				solves for gcd (a, b).
+				solves for the greatest common divisor of a and b.
 			long long mul_mod (const long long &a, const long long &b, const long long &mod) :
 				returns a * b % mod.
 			long long llfpm (const long long &x, const long long &n, const long long &mod) :
@@ -49,8 +49,10 @@ namespace number {
 	}
 
 	long long gcd (const long long &a, const long long &b) {
-		if (b == 0) return a;
-		return gcd (b, a % b);
+		if (!b) return a;
+		long long x = a, y = b;
+		while (a > b ? a = a % b : b = b % a);
+		return a + b;
 	}
 
 	long long mul_mod (const long long &a, const long long &b, const long long &mod) {
