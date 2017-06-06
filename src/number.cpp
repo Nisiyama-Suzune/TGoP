@@ -8,7 +8,7 @@ namespace number {
 
 	const double PI = acos (-1);
 
-	/*	Basic operation :
+	/*	Basic constants & functions :
 			long long inverse (const long long &x, const long long &mod) :
 				returns the inverse of x modulo mod.
 				i.e. x * inv (x) % mod = 1.
@@ -51,8 +51,8 @@ namespace number {
 	long long gcd (const long long &a, const long long &b) {
 		if (!b) return a;
 		long long x = a, y = b;
-		while (a > b ? a = a % b : b = b % a);
-		return a + b;
+		while (x > y ? (x = x % y) : (y = y % x));
+		return x + y;
 	}
 
 	long long mul_mod (const long long &a, const long long &b, const long long &mod) {
@@ -76,10 +76,10 @@ namespace number {
 	}
 
 	/*	Discrete Fourier transform :
-			int dft::prepare (int n) : readys the transformation with dimension n.
+			int dft::init (int n) : initializes the transformation with dimension n.
 			void dft::main (complex *a, int n, int f) :
 				transforms array a with dimension n to its frequency representation.
-				transforms back when f = 1.
+				Transforms back when f = 1.
 	*/
 
 	template <int MAXN = 1E6>
@@ -89,7 +89,7 @@ namespace number {
 
 		complex e[2][MAXN];
 
-		int prepare (int n) {
+		int init (int n) {
 			int len = 1;
 			for (; len <= 2 * n; len <<= 1);
 			for (int i = 0; i < len; i++) {
@@ -126,7 +126,7 @@ namespace number {
 			Converts back if f = 1.
 			Requries specific mod and corresponding prt to work. (given in MOD and PRT)
 		int ntt::crt (int *a, int mod) :
-			makes up the results a from module 3 primes to a certain module mod.
+			fixes the results a from module 3 primes to a certain module mod.
 	*/
 
 	template <int MAXN = 1E6>
@@ -225,8 +225,8 @@ namespace number {
 	};
 
 	/*	Miller Rabin :
-			Checks whether a certain integer is prime.
-			Usage : bool miller_rabin::solve (const long long &).
+			bool miller_rabin::solve (const long long &) :
+				tests whether a certain integer is prime.
 	*/
 
 	struct miller_rabin {
@@ -255,8 +255,8 @@ namespace number {
 	};
 
 	/*	Pollard Rho :
-			Factorizes an integer.
-			Usage : std::vector <long long> pollard_rho::solve (const long long &).
+			std::vector <long long> pollard_rho::solve (const long long &) :
+				factorizes an integer.
 	*/
 
 	struct pollard_rho {
@@ -310,6 +310,31 @@ namespace number {
 					}
 			}
 			return ans;
+		}
+
+	};
+
+	/*	Adaptive Simpson's method :
+			double simpson::solve (double (*f) (double), double l, double r, double eps) :
+				integrates f over (l, r) with error eps.
+	*/
+
+	struct simpson {
+
+		double area (double (*f) (double), double l, double r) { 
+			double m = l + (r - l) / 2;
+			return (f (l) + 4 * f (m) + f (r)) * (r - l) / 6;
+		}
+
+		double solve (double (*f) (double), double l, double r, double eps, double a) {
+			double m = l + (r - l) / 2;
+			double left = area (f, l, m), right = area (f, m, r);
+			if (fabs (left + right - a) <= 15 * eps) return left + right + (left + right - a) / 15.0;
+			return solve (f, l, m, eps / 2, left) + solve (f, m, r, eps / 2, right);
+		}
+
+		double solve (double (*f) (double), double l, double r, double eps) {
+			return solve (f, l, r, eps, area (f, l, r));
 		}
 
 	};

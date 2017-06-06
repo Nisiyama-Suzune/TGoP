@@ -475,7 +475,7 @@ namespace geometry {
 				return det (a, ret.second) / 2.0 + sector_area (ret.second, tB, r);
 		}
 
-		//	Main process.
+		//	Main procedure.
 
 		double solve (const std::vector <point> &p, const circle &c) {
 			double ret = 0.0;
