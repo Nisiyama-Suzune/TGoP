@@ -1,0 +1,24 @@
+\subsubsection{$ax^2+bx+c(a>0)$}
+	\begin{align*}
+		\int\frac{\dd{x}}{ax^2+bx+c}&=\begin{cases}
+			\frac{2}{\sqrt{4ac-b^2}}\arctan\frac{2ax+b}{\sqrt{4ac-b^2}}+C							&b^2<4ac\\
+			\frac{1}{\sqrt{b^2-4ac}}\ln\abs{\frac{2ax+b-\sqrt{b^2-4ac}}{2ax+b+\sqrt{b^2-4ac}}}+C	&b^2>4ac\\
+		\end{cases}\\
+		\int\frac{x}{ax^2+bx+c}\dd{x}&=\frac{1}{2a}\ln\abs{ax^2+bx+c}-\frac{b}{2a}\int\frac{\dd{x}}{ax^2+bx+c}\\
+	\end{align*}
+\subsubsection{$\sqrt{\pm ax^2+bx+c}(a>0)$}
+	\begin{align*}
+		\int\frac{\dd{x}}{ax^2+bx+c}&=\frac{1}{\sqrt{a}}\ln\abs{2ax+b+2\sqrt{a}\sqrt{ax^2+bx+c}}+C\\
+		\int\sqrt{ax^2+bx+c}\dd{x}&=\frac{2ax+b}{4a}\sqrt{ax^2+bx+c}+\frac{4ac-b^2}{8\sqrt{a^3}}\ln\abs{2ax+b+2\sqrt{a}\sqrt{ax^2+bx+c}}+C\\
+		\int\frac{x}{\sqrt{ax^2+bx+c}}\dd{x}&=\frac{1}{a}\sqrt{ax^2+bx+c}-\frac{b}{2\sqrt{a^3}}\ln\abs{2ax+b+2\sqrt{a}\sqrt{ax^2+bx+c}}+C\\
+		\int\frac{\dd{x}}{\sqrt{-ax^2+bx+c}}&=-\frac{1}{\sqrt{a}}\arcsin\frac{2ax-b}{\sqrt{b^2+4ac}}+C\\
+		\int\sqrt{-ax^2+bx+c}\dd{x}&=\frac{2ax-b}{4a}\sqrt{-ax^2+bx+c}+\frac{b^2+4ac}{8\sqrt{a^3}}\arcsin\frac{2ax-b}{\sqrt{b^2+4ac}}+C\\
+		\int\frac{x}{\sqrt{-ax^2+bx+c}}\dd{x}&=-\frac{1}{a}\sqrt{-ax^2+bx+c}+\frac{b}{2\sqrt{a^3}}\arcsin\frac{2ax-b}{\sqrt{b^2+4ac}}+C\\
+	\end{align*}
+\subsubsection{Triangular}
+	\begin{align*}
+		\int\tan x\dd{x}&=-\ln\abs{\cos x}+C\\
+		\int\cot x\dd{x}&=\ln\abs{\sin x}+C\\
+		\int\sec x\dd{x}&=\ln\abs{\tan(\frac{\pi}{4}+\frac{x}{2})}+C=\ln\abs{\sec x+\tan x}+C\\
+		\int\csc x\dd{x}&=\ln\abs{\tan\frac{x}{2}}+C=\ln\abs{\csc x-\cot x}+C\\
+	\end{align*}
