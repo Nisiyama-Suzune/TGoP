@@ -1,12 +1,15 @@
 \documentclass[UTF8,a4paper]{report}
 
 \usepackage{amsmath}
+\usepackage{array}
 \usepackage{courier}
+\usepackage{cprotect}
 \usepackage[margin=1cm, includefoot]{geometry}
 \usepackage{listings}
 \usepackage{mathtools}
 \usepackage{multirow}
 \usepackage{physics}
+\usepackage{verbatim}
 \usepackage{xcolor}
 
 %\setsecnumdepth{subsubsection}
@@ -14,6 +17,9 @@
 
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
 
 \lstset {
 	language=C++,
@@ -126,9 +132,12 @@
 				\input{integration}
 			\subsection{Prefix sum of multiplicative functions}
 				\input{multiplicative-function}
-			\subsection{Spanning tree counting}
-				\input{spanning-tree-counting}
 			\subsection{Prufer sequence}
 				\input{prufer-sequence}
+			\subsection{Spanning tree counting}
+				\input{spanning-tree-counting}
+		\section{Regular expression}
+			\lstinputlisting[firstline=4,lastline=15]{../src/regex.cpp}	
+			\input{regex}
 \end{document}
 

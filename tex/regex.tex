@@ -1,0 +1,150 @@
+\subsection{Special pattern characters}
+\begin{center}
+	\begin{tabular}{|M{2cm}|M{3cm}|M{12cm}|}
+		\hline
+		Characters			&	Description				&	Matches\\
+		\hline
+		\verb!.!			&	Not newline				&	Any character except line terminators (LF, CR, LS, PS).\\
+		\hline
+		\verb!\t!			&	Tab (HT)				&	A horizontal tab character (same as \verb!\u0009!).\\
+		\hline
+		\verb!\n!			&	Newline (LF)			&	A newline (line feed) character (same as \verb!\u000A!).\\
+		\hline
+		\verb!\v!			&	Vertical tab (VT)		&	A vertical tab character (same as \verb!\u000B!).\\
+		\hline
+		\verb!\f!			&	Form feed (FF)			&	A form feed character (same as \verb!\u000C!).\\
+		\hline
+		\verb!\r!			&	Carriage return (CR)	&	A carriage return character (same as \verb!\u000D!).\\
+		\hline
+		\verb!\cletter!		&	Control code			&	A control code character whose code unit value is the same as the remainder of dividing the code unit value of letter by 32. For example: \verb!\ca! is the same as \verb!\u0001!, \verb!\cb! the same as \verb!\u0002!, and so on...\\
+		\hline
+		\verb!\xhh!			&	ASCII character			&	A character whose code unit value has an hex value equivalent to the two hex digits hh. For example: \verb!\x4c! is the same as \verb!L!, or \verb!\x23! the same as \verb!#!.\\
+		\hline
+		\verb!\uhhhh!		&	Unicode character		&	A character whose code unit value has an hex value equivalent to the four hex digits hhhh.\\
+		\hline
+		\verb!\0!			&	Null					&	A null character (same as \verb!\u0000!).\\
+		\hline
+		\verb!\int!			&	Backreference			&	The result of the submatch whose opening parenthesis is the int-th (int shall begin by a digit other than 0). See groups below for more info.\\
+		\hline
+		\verb!\d!			&	Digit					&	A decimal digit character (same as \verb![[:digit:]]!).\\
+		\hline
+		\verb!\D!			&	Not digit				&	Any character that is not a decimal digit character (same as \verb![^[:digit:]]!).\\
+		\hline
+		\verb!\s!			&	Whitespace				&	A whitespace character (same as \verb![[:space:]]!).\\
+		\hline
+		\verb!\S!			&	Not whitespace			&	Any character that is not a whitespace character (same as \verb![^[:space:]]!).\\
+		\hline
+		\verb!\w!			&	Word					&	An alphanumeric or underscore character \verb!(same as [_[:alnum:]])!.\\
+		\hline
+		\verb!\W!			&	Not word				&	Any character that is not an alphanumeric or underscore character (same as \verb![^_[:alnum:]])!.\\
+		\hline
+		\verb!\character!	&	Character				&	The character character as it is, without interpreting its special meaning within a regex expression. Any character can be escaped except those which form any of the special character sequences above. Needed for: \verb!^ $ \ . * + ? ( ) [ ] { } |!.\\
+		\hline\relax
+		\verb![class]!		&	Character class			&	The target character is part of the class (see character classes below).\\
+		\hline\relax
+		\verb![^class]!		&	Negated character class	&	The target character is not part of the class (see character classes below).\\
+		\hline
+	\end{tabular}
+\end{center}
+\subsection{Quantifiers}
+\begin{center}
+	\begin{tabular}{|M{2cm}|M{3cm}|M{12cm}|}
+		\hline
+		Characters			&	Times								&	Effects\\
+		\hline
+		\verb!*!			&	0 or more							&	The preceding atom is matched 0 or more times.\\
+		\hline
+		\verb!+!			&	1 or more							&	The preceding atom is matched 1 or more times.\\
+		\hline
+		\verb!?!			&	0 or 1								&	The preceding atom is optional (matched either 0 times or once).\\
+		\hline
+		\verb!{int}!		&	\verb!int!							&	The preceding atom is matched exactly \verb!int! times.\\
+		\hline
+		\verb!{int,}!		&	\verb!int! or more					&	The preceding atom is matched \verb!int! or more times.\\
+		\hline
+		\verb!{min,max}!	&	Between \verb!min! and \verb!max!	&	The preceding atom is matched at least \verb!min! times, but not more than \verb!max!.\\
+		\hline
+	\end{tabular}
+\end{center}
+
+By default, all these quantifiers are greedy (i.e., they take as many characters that meet the condition as possible). This behavior can be overridden to ungreedy (i.e., take as few characters that meet the condition as possible) by adding a question mark (\verb!?!) after the quantifier.
+
+\subsection{Groups}
+\begin{center}
+	\begin{tabular}{|M{4cm}|M{3cm}|M{10cm}|}
+		\hline
+		Characters				&	Description		&	Effects\\
+		\hline
+		\verb!(subpattern)!		&	Group			&	Creates a backreference.\\
+		\hline
+		\verb!(?:subpattern)!	&	Passive group	&	Does not create a backreference.\\
+		\hline
+	\end{tabular}
+\end{center}
+\subsection{Assertions}
+\begin{center}
+	\begin{tabular}{|M{4cm}|M{3cm}|M{10cm}|}
+		\hline
+		Characters				&	Description			&	Condition for match\\
+		\hline
+		\verb!^!				&	Beginning of line	&	Either it is the beginning of the target sequence, or follows a line terminator.\\
+		\hline
+		\verb!$!				&	End of line			&	Either it is the end of the target sequence, or precedes a line terminator.\\
+		\hline
+		\verb!\b!				&	Word boundary		&	The previous character is a word character and the next is a non-word character (or vice-versa). Note: The beginning and the end of the target sequence are considered here as non-word characters.\\
+		\hline
+		\verb!\B!				&	Not a word boundary	&	The previous and next characters are both word characters or both are non-word characters. Note: The beginning and the end of the target sequence are considered here as non-word characters.\\
+		\hline
+		\verb!(?=subpattern)!	&	Positive lookahead	&	The characters following the assertion must match subpattern, but no characters are consumed.\\
+		\hline
+		\verb|(?!subpattern)|	&	Negative lookahead	&	The characters following the assertion must not match subpattern, but no characters are consumed.\\
+		\hline
+	\end{tabular}
+\end{center}
+\subsection{Alternative}
+A regular expression can contain multiple alternative patterns simply by separating them with the separator operator (\verb!|!): The regular expression will match if any of the alternatives match, and as soon as one does.
+\subsection{Character classes}
+\begin{center}
+	\begin{tabular}{|M{2cm}|M{10cm}|M{5cm}|}
+		\hline
+		Class				&	Description								&	Equivalent (with regex\_traits, default locale)\\
+		\hline
+		\verb![:alnum:]!	&	Alpha-numerical character				&	\verb!isalnum!\\
+		\hline
+		\verb![:alpha:]!	&	Alphabetic character					&	\verb!isalpha!\\
+		\hline
+		\verb![:blank:]!	&	Blank character							&	\verb!isblank!\\
+		\hline
+		\verb![:cntrl:]!	&	Control character						&	\verb!iscntrl!\\
+		\hline
+		\verb![:digit:]!	&	Decimal digit character					&	\verb!isdigit!\\
+		\hline
+		\verb![:graph:]!	&	Character with graphical representation	&	\verb!isgraph!\\
+		\hline
+		\verb![:lower:]!	&	Lowercase letter						&	\verb!islower!\\
+		\hline
+		\verb![:print:]!	&	Printable character						&	\verb!isprint!\\
+		\hline
+		\verb![:punct:]!	&	Punctuation mark character				&	\verb!ispunct!\\
+		\hline
+		\verb![:space:]!	&	Whitespace character					&	\verb!isspace!\\
+		\hline
+		\verb![:upper:]!	&	Uppercase letter						&	\verb!isupper!\\
+		\hline
+		\verb![:xdigit:]!	&	Hexadecimal digit character				&	\verb!isxdigit!\\
+		\hline
+		\verb![:d:]!		&	Decimal digit character					&	\verb!isdigit!\\
+		\hline
+		\verb![:w:]!		&	Word character							&	\verb!isalnum!\\
+		\hline
+		\verb![:s:]!		&	Whitespace character					&	\verb!isspace!\\
+		\hline
+	\end{tabular}
+\end{center}
+Please note that the brackets in the class names are additional to those opening and closing the class definition. For example:
+
+\verb![[:alpha:]]! is a character class that matches any alphabetic character.
+
+\verb![abc[:digit:]]! is a character class that matches a, b, c, or a digit.
+
+\verb![^[:space:]]! is a character class that matches any character except a whitespace.
