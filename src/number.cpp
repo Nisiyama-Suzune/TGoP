@@ -78,7 +78,7 @@ namespace number {
 	/*	Discrete Fourier transform :
 			int dft::init (int n) : initializes the transformation with dimension n.
 			void dft::main (complex *a, int n, int f) :
-				transforms array a with dimension n to its frequency representation.
+				transforms array a with dimension n to its image representation.
 				Transforms back when f = 1.
 	*/
 
@@ -121,8 +121,7 @@ namespace number {
 
 	/* Number-theoretic transform :
 		void ntt::main (int *a, int n, int f, int mod, int prt) :
-			converts polynominal f (x) = a[0] * x^0 + a[1] * x^1 + ... + a[n - 1] * x^(n - 1)
-				to a vector (f (prt^0), f (prt^1), f (prt^2), ..., f (prt^(n - 1))). (module mod)
+			transfers a[n] to its image representation.
 			Converts back if f = 1.
 			Requries specific mod and corresponding prt to work. (given in MOD and PRT)
 		int ntt::crt (int *a, int mod) :
