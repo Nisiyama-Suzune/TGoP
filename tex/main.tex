@@ -3,7 +3,6 @@
 \usepackage{amsmath}
 \usepackage{array}
 \usepackage{courier}
-\usepackage{cprotect}
 \usepackage[margin=1cm, includefoot]{geometry}
 \usepackage{listings}
 \usepackage{mathtools}
@@ -36,8 +35,9 @@
 \author{Suzune Nisiyama}
 
 \begin{document}
-	\maketitle
 	\tableofcontents
+	\cleardoublepage
+	\maketitle
 	\chapter{Trial of number theory}
 		\section{Constants and basic functions}
 			\lstinputlisting[firstline=9,lastline=76]{../src/number.cpp}
