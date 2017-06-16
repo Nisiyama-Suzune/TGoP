@@ -1,24 +1,51 @@
-\subsubsection{$ax^2+bx+c(a>0)$}
-	\begin{align*}
-		&\int\frac{\dd{x}}{ax^2+bx+c}=\begin{cases}
+\subsubsection{$ax^2+bx+c\ (a>0)$}
+	\begin{enumerate}
+		\item$\int\frac{\dd{x}}{ax^2+bx+c}=\begin{cases}
 			\frac{2}{\sqrt{4ac-b^2}}\arctan\frac{2ax+b}{\sqrt{4ac-b^2}}+C							&b^2<4ac\\
 			\frac{1}{\sqrt{b^2-4ac}}\ln\abs{\frac{2ax+b-\sqrt{b^2-4ac}}{2ax+b+\sqrt{b^2-4ac}}}+C	&b^2>4ac\\
-		\end{cases}\\
-		&\int\frac{x}{ax^2+bx+c}\dd{x}=\frac{1}{2a}\ln\abs{ax^2+bx+c}-\frac{b}{2a}\int\frac{\dd{x}}{ax^2+bx+c}\\
-	\end{align*}
-\subsubsection{$\sqrt{\pm ax^2+bx+c}(a>0)$}
-	\begin{align*}
-		&\int\frac{\dd{x}}{ax^2+bx+c}=\frac{1}{\sqrt{a}}\ln\abs{2ax+b+2\sqrt{a}\sqrt{ax^2+bx+c}}+C\\
-		&\int\sqrt{ax^2+bx+c}\dd{x}=\frac{2ax+b}{4a}\sqrt{ax^2+bx+c}+\frac{4ac-b^2}{8\sqrt{a^3}}\ln\abs{2ax+b+2\sqrt{a}\sqrt{ax^2+bx+c}}+C\\
-		&\int\frac{x}{\sqrt{ax^2+bx+c}}\dd{x}=\frac{1}{a}\sqrt{ax^2+bx+c}-\frac{b}{2\sqrt{a^3}}\ln\abs{2ax+b+2\sqrt{a}\sqrt{ax^2+bx+c}}+C\\
-		&\int\frac{\dd{x}}{\sqrt{-ax^2+bx+c}}=-\frac{1}{\sqrt{a}}\arcsin\frac{2ax-b}{\sqrt{b^2+4ac}}+C\\
-		&\int\sqrt{-ax^2+bx+c}\dd{x}=\frac{2ax-b}{4a}\sqrt{-ax^2+bx+c}+\frac{b^2+4ac}{8\sqrt{a^3}}\arcsin\frac{2ax-b}{\sqrt{b^2+4ac}}+C\\
-		&\int\frac{x}{\sqrt{-ax^2+bx+c}}\dd{x}=-\frac{1}{a}\sqrt{-ax^2+bx+c}+\frac{b}{2\sqrt{a^3}}\arcsin\frac{2ax-b}{\sqrt{b^2+4ac}}+C\\
-	\end{align*}
-\subsubsection{Triangular}
-	\begin{align*}
-		&\int\tan x\dd{x}=-\ln\abs{\cos x}+C\\
-		&\int\cot x\dd{x}=\ln\abs{\sin x}+C\\
-		&\int\sec x\dd{x}=\ln\abs{\tan(\frac{\pi}{4}+\frac{x}{2})}+C=\ln\abs{\sec x+\tan x}+C\\
-		&\int\csc x\dd{x}=\ln\abs{\tan\frac{x}{2}}+C=\ln\abs{\csc x-\cot x}+C\\
-	\end{align*}
+		\end{cases}$
+		\item$\int\frac{x}{ax^2+bx+c}\dd{x}=\frac{1}{2a}\ln\abs{ax^2+bx+c}-\frac{b}{2a}\int\frac{\dd{x}}{ax^2+bx+c}$
+	\end{enumerate}
+\subsubsection{$\sqrt{\pm ax^2+bx+c}\ (a>0)$}
+	\begin{enumerate}
+		\item$\int\frac{\dd{x}}{ax^2+bx+c}=\frac{1}{\sqrt{a}}\ln\abs{2ax+b+2\sqrt{a}\sqrt{ax^2+bx+c}}+C$
+		\item$\int\sqrt{ax^2+bx+c}\dd{x}=\frac{2ax+b}{4a}\sqrt{ax^2+bx+c}+\frac{4ac-b^2}{8\sqrt{a^3}}\ln\abs{2ax+b+2\sqrt{a}\sqrt{ax^2+bx+c}}+C$
+		\item$\int\frac{x}{\sqrt{ax^2+bx+c}}\dd{x}=\frac{1}{a}\sqrt{ax^2+bx+c}-\frac{b}{2\sqrt{a^3}}\ln\abs{2ax+b+2\sqrt{a}\sqrt{ax^2+bx+c}}+C$
+		\item$\int\frac{\dd{x}}{\sqrt{-ax^2+bx+c}}=-\frac{1}{\sqrt{a}}\arcsin\frac{2ax-b}{\sqrt{b^2+4ac}}+C$
+		\item$\int\sqrt{-ax^2+bx+c}\dd{x}=\frac{2ax-b}{4a}\sqrt{-ax^2+bx+c}+\frac{b^2+4ac}{8\sqrt{a^3}}\arcsin\frac{2ax-b}{\sqrt{b^2+4ac}}+C$
+		\item$\int\frac{x}{\sqrt{-ax^2+bx+c}}\dd{x}=-\frac{1}{a}\sqrt{-ax^2+bx+c}+\frac{b}{2\sqrt{a^3}}\arcsin\frac{2ax-b}{\sqrt{b^2+4ac}}+C$
+	\end{enumerate}
+\subsubsection{Trigonometric}
+	\begin{enumerate}
+		\item$\int\tan x\dd{x}=-\ln\abs{\cos x}+C$
+		\item$\int\cot x\dd{x}=\ln\abs{\sin x}+C$
+		\item$\int\sec x\dd{x}=\ln\abs{\tan(\frac{\pi}{4}+\frac{x}{2})}+C=\ln\abs{\sec x+\tan x}+C$
+		\item$\int\csc x\dd{x}=\ln\abs{\tan\frac{x}{2}}+C=\ln\abs{\csc x-\cot x}+C$
+		\item$\int\sec^2x\dd{x}=\tan x+C$
+		\item$\int\csc^2x\dd{x}=-\cot x+C$
+		\item$\int\sec x \tan x\dd{x}=\sec x+C$
+		\item$\int\csc x \cot x\dd{x}=-\csc x+C$
+		\item$\int\sin^2x\dd{x}=\frac{x}{2}-\frac{1}{4}\sin 2x+C$
+		\item$\int\cos^2x\dd{x}=\frac{x}{2}+\frac{1}{4}\sin 2x+C$
+		\item$\int\sin^nx\dd{x}=-\frac{1}{n}\sin^{n-1}x\cos x+\frac{n-1}{n}\int\sin^{n-2}x\dd{x}$
+		\item$\int\cos^nx\dd{x}=\frac{1}{n}\cos^{n-1}x\sin x+\frac{n-1}{n}\int cos^{n-2}x\dd{x}$
+		\item$\int\frac{\dd{x}}{\sin^nx}=-\frac{1}{n-1}\frac{\cos x}{\sin^{n-1}x}+\frac{n-2}{n-1}\int\frac{\dd{x}}{\sin^{n-2}x}$
+		\item$\int\frac{\dd{x}}{\cos^nx}=\frac{1}{n-1}\frac{\sin x}{\cos^{n-1}x}+\frac{n-2}{n-1}\int\frac{\dd{x}}{\cos^{n-2}x}$
+		\item$\int\cos^m x\sin^n x\dd{x}=\frac{1}{m+n}\cos^{m-1}x\sin^{n+1}x+\frac{m-1}{m+n}\int\cos^{m-2}x\sin^n x\dd{x}=-\frac{1}{m+n}\cos^{m+1}x\sin^{n-1}x+\\\frac{n-1}{m+1}\int\cos^m x\sin^{n-2}x\dd{x}$
+	\end{enumerate}
+\subsubsection{Inverse trigonometric$\ (a>0)$}
+	\begin{enumerate}
+		\item$\int\arcsin\frac{x}{a}\dd{x}=x\arcsin\frac{x}{a}+\sqrt{a^2-x^2}+C$
+		\item$\int\arccos\frac{x}{a}\dd{x}=x\arccos\frac{x}{a}-\sqrt{a^2-x^2}+C$
+		\item$\int\arctan\frac{x}{a}\dd{x}=x\arctan\frac{x}{a}-\frac{a}{2}\ln(a^2+x^2)+C$
+	\end{enumerate}
+\subsubsection{Exponential}
+	\begin{enumerate}
+		\item$\int a^x\dd{x}=\frac{1}{\ln a}a^x+C$
+		\item$\int e^{ax}\dd{x}=\frac{1}{a}a^{ax}+C$
+	\end{enumerate}
+\subsubsection{Logistic}
+	\begin{enumerate}
+		\item$\int\ln x\dd{x}=x\ln x-x+C$
+		\item$\frac{\dd{x}}{x\ln x}=\ln\abs{\ln x}+C$
+	\end{enumerate}

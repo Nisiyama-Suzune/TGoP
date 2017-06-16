@@ -76,18 +76,20 @@ namespace number {
 	}
 
 	/*	Discrete Fourier transform :
-			int dft::init (int n) : initializes the transformation with dimension n.
-			void dft::main (complex *a, int n, int f) :
+			int dft::init (int n) : 
+				initializes the transformation with dimension n.
+				Returns the recommended size.
+			void dft::solve (complex *a, int n, int f) :
 				transforms array a with dimension n to its image representation.
-				Transforms back when f = 1.
+				Transforms back when f = 1. (n should be 2^k)
 	*/
 
-	template <int MAXN = 1E6>
+	template <int MAXN = 1000000>
 	struct dft {
 
 		typedef std::complex <double> complex;
 
-		complex e[2][MAXN];
+		static complex e[2][MAXN];
 
 		int init (int n) {
 			int len = 1;
@@ -99,7 +101,7 @@ namespace number {
 			return len;
 		}
 
-		void main (complex *a, int n, int f) {
+		void solve (complex *a, int n, int f) {
 			for (int i = 0, j = 0; i < n; i++) {
 				if (i > j) std::swap (a[i], a[j]);
 				for (int t = n >> 1; (j ^= t) < t; t >>= 1);
@@ -120,18 +122,18 @@ namespace number {
 	};
 
 	/* Number-theoretic transform :
-		void ntt::main (int *a, int n, int f, int mod, int prt) :
-			transfers a[n] to its image representation.
-			Converts back if f = 1.
+		void ntt::solve (int *a, int n, int f, int mod, int prt) :
+			transforms a[n] to its image representation.
+			Converts back if f = 1. (n should be 2^k)
 			Requries specific mod and corresponding prt to work. (given in MOD and PRT)
 		int ntt::crt (int *a, int mod) :
 			fixes the results a from module 3 primes to a certain module mod.
 	*/
 
-	template <int MAXN = 1E6>
+	template <int MAXN = 1000000>
 	struct ntt {
 
-		void main (int *a, int n, int f, int mod, int prt) {
+		void solve (int *a, int n, int f, int mod, int prt) {
 			for (register int i = 0, j = 0; i < n; i++) {
 				if (i > j) std::swap (a[i], a[j]);
 				for (register int t = n >> 1; (j ^= t) < t; t >>= 1);

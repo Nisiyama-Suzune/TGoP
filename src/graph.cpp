@@ -12,7 +12,7 @@ namespace graph {
 			Various kinds of edge list.
 	*/
 
-	template <int MAXN = 1E5, int MAXM = 1E5>
+	template <int MAXN = 100000, int MAXM = 100000>
 	struct edge_list {
 		int size;
 		int begin[MAXN], dest[MAXM], next[MAXM];
@@ -28,7 +28,7 @@ namespace graph {
 		}
 	};
 
-	template <int MAXN = 1E5, int MAXM = 1E5>
+	template <int MAXN = 100000, int MAXM = 100000>
 	struct cost_edge_list {
 		int size;
 		int begin[MAXN], dest[MAXM], next[MAXM], cost[MAXM];
@@ -44,7 +44,7 @@ namespace graph {
 		}
 	};
 
-	template <int MAXN = 1E5, int MAXM = 1E5>
+	template <int MAXN = 100000, int MAXM = 100000>
 	struct flow_edge_list {
 		int size;
 		int begin[MAXN], dest[MAXM], next[MAXM], flow[MAXM], inv[MAXM];
@@ -61,7 +61,7 @@ namespace graph {
 		}
 	};
 
-	template <int MAXN = 1E5, int MAXM = 1E5>
+	template <int MAXN = 100000, int MAXM = 100000>
 	struct cost_flow_edge_list {
 		int size;
 		int begin[MAXN], dest[MAXM], next[MAXM], cost[MAXM], flow[MAXM], inv[MAXM];
@@ -87,7 +87,7 @@ namespace graph {
 				last[] gives the previous vertex.
 	*/
 
-	template <int MAXN = 1E5, int MAXM = 1E5>
+	template <int MAXN = 100000, int MAXM = 100000>
 	struct spfa {
 
 		int dist[MAXN], last[MAXN];
@@ -137,7 +137,7 @@ namespace graph {
 			Shortest path algorithm.
 	*/
 
-	template <int MAXN = 1E5, int MAXM = 1E5>
+	template <int MAXN = 100000, int MAXM = 100000>
 	struct dijkstra {
 
 		int dist[MAXN], last[MAXN];
@@ -173,7 +173,7 @@ namespace graph {
 				component[] gives which component a vertex belongs to.
 	*/
 
-	template <int MAXN = 1E5, int MAXM = 1E5>
+	template <int MAXN = 100000, int MAXM = 100000>
 	struct tarjan {
 
 		int component[MAXN], component_size;
@@ -214,7 +214,7 @@ namespace graph {
 				Usage : solve () for maximum matching. The matching is in matchx and matchy.
 	*/
 
-	template <int MAXN = 1E5, int MAXM = 1E5>
+	template <int MAXN = 100000, int MAXM = 100000>
 	struct hopcoft_carp {
 
 		int n, m;
@@ -625,7 +625,7 @@ namespace graph {
 				t : sink.
 	*/
 
-	template <int MAXN = 1E3, int MAXM = 1E5>
+	template <int MAXN = 1000, int MAXM = 100000>
 	struct isap {
 
 		int pre[MAXN], d[MAXN], gap[MAXN], cur[MAXN];
@@ -688,7 +688,7 @@ namespace graph {
 				t : sink.
 	*/
 
-	template <int MAXN = 1E3, int MAXM = 1E5>
+	template <int MAXN = 1000, int MAXM = 100000>
 	struct dinic {
 
 		int n, s, t;
@@ -743,7 +743,7 @@ namespace graph {
 	*/
 
 
-	template <int MAXN = 1E3, int MAXM = 1E5>
+	template <int MAXN = 1000, int MAXM = 100000>
 	struct minimum_cost_flow {
 
 		int n, source, target;
@@ -806,7 +806,7 @@ namespace graph {
 				returns the flow and the cost respectively.
 	*/
 
-	template <int MAXN = 1E3, int MAXM = 1E5>
+	template <int MAXN = 1000, int MAXM = 100000>
 	struct zkw_flow {
 
 		int n, s, t, totFlow, totCost;
