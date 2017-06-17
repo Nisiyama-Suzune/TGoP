@@ -1,0 +1,16 @@
+\subsubsection{Convex hull optimization}
+	Generally, in dynamic programming with recurrence
+	$$f(i) = \min_{k<i}\{a[i]b(j)+c(j)\}$$
+	all decisions $k$ can be treated as a set of segments on a convex hull.
+	By applying Graham's scanning, it is possible to maintain such hull in a monotone queue or a \verb!std::tuple <slope, intercept, x_min>!.
+	Hence, $k(i)$ can be obtained by performing a binary search in the hull.
+\subsubsection{Divide \& conquer optimization}
+	For recurrence 
+	$$f(i) = \min_{k<i}\{b(k)+c[k][i]\}$$
+	$k(i) \leq k(i+1)$ holds true if $c[a][c]+c[b][d]<c[a][d]+c[b][c]$.
+	Thus, $k(i)$ can be maintained in a monotone queue.
+\subsubsection{Knuth optimization}
+	For recurrence
+	$$f(i,j) = \min_{i<k<j}\{f(i,k)+f(k,j)\}+c[i][j]$$
+	$k(i,j-1) \leq k(i,j) \leq k(i+1,j)$ holds true if $c[a][c]+c[b][d]<c[a][d]+c[b][c]$.
+

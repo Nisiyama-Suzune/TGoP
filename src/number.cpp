@@ -89,7 +89,7 @@ namespace number {
 
 		typedef std::complex <double> complex;
 
-		static complex e[2][MAXN];
+		complex e[2][MAXN];
 
 		int init (int n) {
 			int len = 1;
