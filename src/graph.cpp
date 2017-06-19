@@ -169,7 +169,7 @@ namespace graph {
 
 	/*	Tarjan :
 			returns strongly connected components.
-			void tarjan::solve (const edge_list &) :
+			void tarjan::solve (const edge_list &, int) :
 				component[] gives which component a vertex belongs to.
 	*/
 
@@ -178,38 +178,37 @@ namespace graph {
 
 		int component[MAXN], component_size;
 
-		int dfn[MAXN], low[MAXN], vis[MAXN], s[MAXN], s_s, ins[MAXN], ind;
+		int dfn[MAXN], low[MAXN], vis[MAXN], s[MAXN], s_s, ind;
 
-		void dfs (const edge_list <MAXN, MAXM> &e, int u) {
+		void dfs (const edge_list <MAXN, MAXM> &e, int u, int f) {
 			dfn[u] = low[u] = ind++;
-			vis[u] = ins[u] = 1; s[s_s++] = u;
+			vis[u] = 1; s[s_s++] = u;
 			for (int i = e.begin[u]; ~i; i = e.next[i]) {
 				if (!vis[e.dest[i]]) {
-					dfs (e, e.dest[i]);
+					dfs (e, e.dest[i], u);
 					low[u] = std::min (low[u], low[e.dest[i]]);
-				} else if (ins[e.dest[i]])
+				} else if (dfn[e.dest[i]] < dfn[u] && e.dest[i] != f)
 					low[u] = std::min (low[u], dfn[e.dest[i]]);
 			}
 			if (dfn[u] == low[u]) {
 				do {
 					component[s[--s_s]] = component_size;
-					ins[s[s_s]] = 0;
 				} while (s[s_s] != u);
-				component_size++;
+				++component_size;
 			}
 		}
 
-		void solve (const edge_list <MAXN, MAXM> &e) {
+		void solve (const edge_list <MAXN, MAXM> &e, int n) {
 			std::fill (vis, vis + MAXN, 0);
-			std::fill (ins, ins + MAXN, 0);
-			s_s = ind = 0;
-			dfs (e, 0);
+			std::fill (component, component + MAXN, -1);
+			component_size = s_s = ind = 0;
+			for (int i = 0; i < n; ++i) if (!vis[i]) dfs (e, i, -1);
 		}
 
 	};
 
 	/*	Hopcoft-Carp algorithm :
-			maximum matching with complexity O (m * n^0.5).
+			unweighted maximum matching for bipartition graphs with complexity O (m * n^0.5).
 			struct hopcoft_carp :
 				Usage : solve () for maximum matching. The matching is in matchx and matchy.
 	*/
@@ -270,7 +269,7 @@ namespace graph {
 	};
 
 	/*	Kuhn–Munkres algorithm :
-			weighted maximum matching algorithm. Complexity O (N^3).
+			weighted maximum matching algorithm for bipartition graphs. Complexity O (N^3).
 			struct kuhn_munkres :
 				Initialize : pass nx, ny as the size of both sets, w as the weight matrix.
 				Usage : solve () for the minimum matching. The exact matching is in link[].
@@ -332,7 +331,7 @@ namespace graph {
 	};
 
 	/*	Weighted matching algorithm :
-			maximum match for graphs. Not stable.
+			maximum matching for general weighted graphs. Not stable.
 			struct weighted_match :
 				Usage : Set k to the size of vertices, w to the weight matrix.
 				Note that k has to be even for the algorithm to work.
@@ -402,7 +401,7 @@ namespace graph {
 	};
 
 	/*	Weighted blossom algorithm (vfleaking ver.) :
-			maximum match for graphs. Complexity O (n^3).
+			maximum matching for general weighted graphs. Complexity O (n^3).
 			Note that the base index is 1.
 			struct weighted_blossom :
 				Usage :
@@ -614,7 +613,7 @@ namespace graph {
 				for (int v = 1; v <= n; ++v)
 					g[u][v] = edge (u, v, 0);
 		}
-		
+
 	};
 
 	/*	Sparse graph maximum flow :
@@ -856,6 +855,176 @@ namespace graph {
 				} while (dfs (e, s, INF));
 			} while (!modlable ());
 			return std::make_pair (totFlow, totCost);
+		}
+
+	};
+
+	/*	Vertex biconnected component :
+			Divides the edges of a graph into several vertex biconnected components.
+			vertex_biconnected_component::solve (const edge_list <MAXN, MAXM> &, int n) :
+				component[] gives the index of the component each edge belongs to.
+	*/
+
+	template <int MAXN = 100000, int MAXM = 100000>
+	struct vertex_biconnected_component {
+
+		int component[MAXM], component_size;
+
+		int dfn[MAXN], low[MAXN], vis[MAXN], s[MAXN], s_s, ind;
+
+		void dfs (const edge_list <MAXN, MAXM> &e, int u, int f) {
+			dfn[u] = low[u] = ind++;
+			vis[u] = 1;
+			for (int i = e.begin[u]; ~i; i = e.next[i]) {
+				if (!vis[e.dest[i]]) {
+					int low_s = s_s; s[s_s++] = i;
+					dfs (e, e.dest[i], u);
+					low[u] = std::min (low[u], low[e.dest[i]]);
+					if (low[e.dest[i]] >= dfn[u]) {
+						for (; s_s > low_s; --s_s)
+							component[s[s_s - 1]] = component_size;
+						component_size++;
+					}
+				} else if (dfn[e.dest[i]] < dfn[u] && e.dest[i] != f) {
+					s[s_s++] = i;
+					low[u] = std::min (low[u], dfn[e.dest[i]]);
+				}
+			}
+		}
+
+		void solve (const edge_list <MAXN, MAXM> &e, int n) {
+			std::fill (vis, vis + MAXN, 0);
+			std::fill (component, component + MAXM, -1);
+			component_size = s_s = ind = 0;
+			for (int i = 0; i < n; ++i) if (!vis[i]) dfs (e, i, -1);
+		}
+
+	};
+
+	/*	Edge biconnected component :
+			Divides the vertices of a graph into several edge biconnected components.
+			edge_biconnected_component::solve (const edge_list <MAXN, MAXM> &, int n) :
+				component[] gives the index of the component each vertex belongs to.
+	*/
+
+	template <int MAXN = 100000, int MAXM = 100000>
+	struct edge_biconnected_component {
+
+		int component[MAXN], component_size;
+
+		int dfn[MAXN], low[MAXN], vis[MAXN], s[MAXN], s_s, ind;
+
+		void dfs (const edge_list <MAXN, MAXM> &e, int u, int f) {
+			dfn[u] = low[u] = ind++;
+			vis[u] = 1; s[s_s++] = u;
+			for (int i = e.begin[u]; ~i; i = e.next[i]) {
+				if (!vis[e.dest[i]]) {
+					dfs (e, e.dest[i], u);
+					low[u] = std::min (low[u], low[e.dest[i]]);
+					if (low[e.dest[i]] > dfn[u]) {
+						do {
+							component[s[--s_s]] = component_size;
+						} while (s[s_s] != e.dest[i]);
+						component_size++;
+					}
+				} else if (dfn[e.dest[i]] < dfn[u] && e.dest[i] != f)
+					low[u] = std::min (low[u], dfn[e.dest[i]]);
+			}
+		}
+
+		void solve (const edge_list <MAXN, MAXM> &e, int n) {
+			std::fill (vis, vis + MAXN, 0);
+			std::fill (component, component + MAXN, -1);
+			component_size = s_s = ind = 0;
+			for (int i = 0; i < n; ++i) if (!vis[i]) dfs (e, i, -1);
+		}
+
+	};
+
+	/*	Dominator tree :
+			void dominator_tree::solve (int s, int n, const edge_list <MAXN, MAXM> &succ) :
+				solves for the immediate dominator (idom[]) of each node,
+					idom[x] will be x if x does not have a dominator,
+					and will be -1 if x is not reachable from s.
+	*/
+			
+	template <int MAXN = 100000, int MAXM = 100000>
+	struct dominator_tree {
+
+		int dfn[MAXN], sdom[MAXN], idom[MAXN], id[MAXN], f[MAXN], fa[MAXN], smin[MAXN], stamp;
+
+		void predfs (int x, const edge_list <MAXN, MAXM> &succ) {
+			id[dfn[x] = stamp++] = x;
+			for (int i = succ.begin[x]; ~i; i = succ.next[i]) {
+				int y = succ.dest[i];
+				if (dfn[y] < 0) {
+					f[y] = x;
+					predfs (y, succ);
+				}
+			}
+		}
+
+
+		int getfa (int x) {
+			if (fa[x] == x) return x;
+			int ret = getfa (fa[x]);
+			if (dfn[sdom[smin[fa[x]]]] < dfn[sdom[smin[x]]]) {
+				smin[x] = smin[fa[x]];
+			}
+			return fa[x] = ret;
+		}
+
+		void solve (int s, int n, const edge_list <MAXN, MAXM> &succ) {
+			std::fill (dfn, dfn + n, 0);
+			std::fill (idom, idom + n, -1);
+			static edge_list <MAXN, MAXM> pred, tmp;
+			pred.clear (n);
+			for (int i = 0; i < n; ++i)
+				for (int j = succ.begin[i]; ~j; j = succ.next[j])
+					pred.add_edge (succ.dest[j], i);
+			stamp = 0; tmp.clear (n); predfs (s, succ);
+			for (int i = 0; i < stamp; ++i)
+				fa[id[i]] = smin[id[i]] = id[i];
+			for (int o = stamp - 1; o >= 0; --o) {
+				int x = id[o];
+				if (o) {
+					sdom[x] = f[x];
+					for (int i = pred.begin[x]; ~i; i = pred.next[i]) {
+						int p = pred.dest[i];
+						if (dfn[p] < 0) continue;
+						if (dfn[p] > dfn[x]) {
+							getfa (p);
+							p = sdom[smin[p]];
+						}
+						if (dfn[sdom[x]] > dfn[p]) {
+							sdom[x] = p;
+						}
+					}
+					tmp.add_edge (sdom[x], x);
+				}
+				while (~tmp.begin[x]) {
+					int y = tmp.dest[tmp.begin[x]];
+					tmp.begin[x] = tmp.next[tmp.begin[x]];
+					getfa (y);
+					if (x != sdom[smin[y]]) {
+						idom[y] = smin[y];
+					} else {
+						idom[y] = x;
+					}
+				}
+				for (int i = succ.begin[x]; ~i; i = succ.next[i]) {
+					if (f[succ.dest[i]] == x) {
+						fa[succ.dest[i]] = x;
+					}
+				}
+			}
+			idom[s] = s;
+			for (int i = 1; i < stamp; ++i) {
+				int x = id[i];
+				if (idom[x] != sdom[x]) {
+					idom[x] = idom[idom[x]];
+				}
+			}
 		}
 
 	};
