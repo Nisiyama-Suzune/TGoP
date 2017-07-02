@@ -32,9 +32,9 @@ namespace string {
 		}
 
 		int find (const std::string &str) {
-			for (int i = 0, j = 0; i < (int) str.size (); ++i, ++j) {
-				if (j == match.size ()) return i - match.size ();
-				while (~j && str[i] != match[j]) j = fail[j];
+			for (int i = 0, j = -1; i < (int) str.size (); j += str[i] == match[j + 1], ++i) {
+				if (j == match.size () - 1) return i - match.size ();
+				while (~j && str[i] != match[j + 1]) j = fail[j];
 			}
 			return str.size ();
 		}
