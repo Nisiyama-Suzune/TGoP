@@ -56,13 +56,10 @@ namespace number {
 	}
 
 	long long mul_mod (const long long &a, const long long &b, const long long &mod) {
-		long long ans = 0, add = a, k = b;
-		while (k) {
-			if (k & 1) ans = (ans + add) % mod;
-			add = (add + add) % mod;
-			k >>= 1;
-		}
-		return ans;
+		long long d = (long long) floor (a * (double) b / mod + 0.5);
+		long long ret = a * b - d * mod;
+		if (ret < 0) ret += mod;
+		return ret;
 	}
 
 	long long llfpm (const long long &x, const long long &n, const long long &mod) {
@@ -303,12 +300,11 @@ namespace number {
 			else {
 				long long rem = number;
 				for (long long i = 2; i * i <= rem; ++i)
-					if (number % i)
-						++i;
-					else {
+					while (!number % i) {
 						ans.push_back (i);
-						rem %= i;
+						rem /= i;
 					}
+				if (rem > 1) ans.push_back (rem);
 			}
 			return ans;
 		}
