@@ -9,7 +9,7 @@ import java.util.*;
 
 /*	Regular usage:
 		Slower IO :
-			Scanner in = new Scanner (System.in));
+			Scanner in = new Scanner (System.in);
 			Scanner in = new Scanner (new BufferedInputStream (System.in));
 			Input :
 				in.nextInt () / in.nextBigInteger () / in.nextBigDecimal () / in.nextDouble ()

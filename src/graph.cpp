@@ -178,31 +178,31 @@ namespace graph {
 
 		int component[MAXN], component_size;
 
-		int dfn[MAXN], low[MAXN], vis[MAXN], s[MAXN], s_s, ind;
+		int dfn[MAXN], low[MAXN], ins[MAXN], s[MAXN], s_s, ind;
 
-		void dfs (const edge_list <MAXN, MAXM> &e, int u, int f) {
+		void dfs (const edge_list <MAXN, MAXM> &e, int u) {
 			dfn[u] = low[u] = ind++;
-			vis[u] = 1; s[s_s++] = u;
+			s[s_s++] = u;
 			for (int i = e.begin[u]; ~i; i = e.next[i]) {
-				if (!vis[e.dest[i]]) {
-					dfs (e, e.dest[i], u);
+				if (!~dfn[e.dest[i]]) {
+					dfs (e, e.dest[i]);
 					low[u] = std::min (low[u], low[e.dest[i]]);
-				} else if (dfn[e.dest[i]] < dfn[u] && e.dest[i] != f)
+				} else if (ins[e.dest[i]])
 					low[u] = std::min (low[u], dfn[e.dest[i]]);
 			}
 			if (dfn[u] == low[u]) {
 				do {
-					component[s[--s_s]] = component_size;
+					component[s[--s_s]] = component_size; ins[s[s_s]] = false;
 				} while (s[s_s] != u);
 				++component_size;
 			}
 		}
 
 		void solve (const edge_list <MAXN, MAXM> &e, int n) {
-			std::fill (vis, vis + MAXN, 0);
+			std::fill (dfn, dfn + MAXN, -1);
 			std::fill (component, component + MAXN, -1);
 			component_size = s_s = ind = 0;
-			for (int i = 0; i < n; ++i) if (!vis[i]) dfs (e, i, -1);
+			for (int i = 0; i < n; ++i) if (!~dfn[i]) dfs (e, i);
 		}
 
 	};
@@ -860,7 +860,7 @@ namespace graph {
 	};
 
 	/*	Vertex biconnected component :
-			Divides the edges of a graph into several vertex biconnected components.
+			Divides the edges of an undirected graph into several vertex biconnected components.
 			vertex_biconnected_component::solve (const edge_list <MAXN, MAXM> &, int n) :
 				component[] gives the index of the component each edge belongs to.
 	*/
@@ -870,39 +870,39 @@ namespace graph {
 
 		int component[MAXM], component_size;
 
-		int dfn[MAXN], low[MAXN], vis[MAXN], s[MAXN], s_s, ind;
+		int dfn[MAXN], low[MAXN], s[MAXN], s_s, ind;
 
 		void dfs (const edge_list <MAXN, MAXM> &e, int u, int f) {
 			dfn[u] = low[u] = ind++;
-			vis[u] = 1;
-			for (int i = e.begin[u]; ~i; i = e.next[i]) {
-				if (!vis[e.dest[i]]) {
-					int low_s = s_s; s[s_s++] = i;
-					dfs (e, e.dest[i], u);
-					low[u] = std::min (low[u], low[e.dest[i]]);
-					if (low[e.dest[i]] >= dfn[u]) {
-						for (; s_s > low_s; --s_s)
-							component[s[s_s - 1]] = component_size;
-						component_size++;
-					}
-				} else if (dfn[e.dest[i]] < dfn[u] && e.dest[i] != f) {
+			for (int i = e.begin[u]; ~i; i = e.next[i])
+				if (e.dest[i] != f && dfn[u] < dfn[e.dest[i]]) {
 					s[s_s++] = i;
-					low[u] = std::min (low[u], dfn[e.dest[i]]);
+					if (!~dfn[u])
+					{
+						dfs (e, e.dest[i], u);
+						low[u] = std::min (low[u], low[e.dest[i]]);
+						if (low[e.dest[i]] >= dfn[u]) {
+							do {
+								component[s[--s_s]] = component_size;
+							} while (component[s[s_s]] != i);
+							component_size++;
+						}
+					} else
+						low[u] = std::min (low[u], dfn[e.dest[i]]);
 				}
-			}
 		}
 
 		void solve (const edge_list <MAXN, MAXM> &e, int n) {
-			std::fill (vis, vis + MAXN, 0);
+			std::fill (dfn, dfn + MAXN, -1);
 			std::fill (component, component + MAXM, -1);
 			component_size = s_s = ind = 0;
-			for (int i = 0; i < n; ++i) if (!vis[i]) dfs (e, i, -1);
+			for (int i = 0; i < n; ++i) if (!~dfn[i]) dfs (e, i, -1);
 		}
 
 	};
 
 	/*	Edge biconnected component :
-			Divides the vertices of a graph into several edge biconnected components.
+			Divides the vertices of an undirected graph into several edge biconnected components.
 			edge_biconnected_component::solve (const edge_list <MAXN, MAXM> &, int n) :
 				component[] gives the index of the component each vertex belongs to.
 	*/
@@ -912,31 +912,31 @@ namespace graph {
 
 		int component[MAXN], component_size;
 
-		int dfn[MAXN], low[MAXN], vis[MAXN], s[MAXN], s_s, ind;
+		int dfn[MAXN], low[MAXN], s[MAXN], s_s, ind;
 
 		void dfs (const edge_list <MAXN, MAXM> &e, int u, int f) {
 			dfn[u] = low[u] = ind++;
-			vis[u] = 1; s[s_s++] = u;
-			for (int i = e.begin[u]; ~i; i = e.next[i]) {
-				if (!vis[e.dest[i]]) {
-					dfs (e, e.dest[i], u);
-					low[u] = std::min (low[u], low[e.dest[i]]);
-					if (low[e.dest[i]] > dfn[u]) {
-						do {
-							component[s[--s_s]] = component_size;
-						} while (s[s_s] != e.dest[i]);
-						component_size++;
-					}
-				} else if (dfn[e.dest[i]] < dfn[u] && e.dest[i] != f)
-					low[u] = std::min (low[u], dfn[e.dest[i]]);
-			}
+			s[s_s++] = u;
+			for (int i = e.begin[u]; ~i; i = e.next[i]) 
+				if (e.dest[i] != f) {
+					if (!~dfn[e.dest[i]]) {
+						dfs (e, e.dest[i], u);
+						low[u] = std::min (low[u], low[e.dest[i]]);
+						if (low[e.dest[i]] > dfn[u]) {
+							do {
+								component[s[--s_s]] = component_size;
+							} while (s[s_s] != e.dest[i]);
+							component_size++;
+						}
+					} else low[u] = std::min (low[u], dfn[e.dest[i]]);
+				}
 		}
 
 		void solve (const edge_list <MAXN, MAXM> &e, int n) {
-			std::fill (vis, vis + MAXN, 0);
+			std::fill (dfn, dfn + MAXN, -1);
 			std::fill (component, component + MAXN, -1);
 			component_size = s_s = ind = 0;
-			for (int i = 0; i < n; ++i) if (!vis[i]) dfs (e, i, -1);
+			for (int i = 0; i < n; ++i) if (!~dfn[i]) dfs (e, i, -1);
 		}
 
 	};
@@ -975,7 +975,7 @@ namespace graph {
 		}
 
 		void solve (int s, int n, const edge_list <MAXN, MAXM> &succ) {
-			std::fill (dfn, dfn + n, 0);
+			std::fill (dfn, dfn + n, -1);
 			std::fill (idom, idom + n, -1);
 			static edge_list <MAXN, MAXM> pred, tmp;
 			pred.clear (n);
