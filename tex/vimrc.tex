@@ -1,29 +1,14 @@
 \begin{lstlisting}[language=tex,identifierstyle=\color{black},commentstyle=\color{black}]
-set ruler
-set number
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
-set smartindent
-set showmatch
-set hlsearch
-set incsearch
-set autoread
-set backspace=2
-set mouse=a
+set ru nu ts=4 sts=4 sw=4 si sm hls is ar bs=2 mouse=a
 
 syntax on
 
-nmap <F3> :vsplit %<.in <CR>
-nmap <F4> :!gedit % <CR>
+nm <F3> :vsplit %<.in <CR>
+nm <F4> :!gedit % <CR>
 
-autocmd FileType cpp map <F5> :!time ./%< <CR>
-autocmd FileType cpp map <F7> :!gdb %< <CR>
-autocmd FileType cpp map <F8> :!time ./%< < %<.in <CR>
-autocmd FileType cpp map <F9> :!g++ % -o %< -std=c++11 && size %< <CR>
-
-autocmd FileType java map <F5> :!time java %< <CR>
-autocmd FileType java map <F8> :!time java %< < %<.in <CR>
-autocmd FileType java map <F9> :!javac % <CR>
+au BufEnter *.cpp set cin
+au BufEnter *.cpp nm <F5> :!time ./%< <CR> | nm <F7> :!gdb ./%< <CR> | nm <F8> :!time ./%< < %<.in <CR> | 
+\ nm <F9> :!g++ % -o %< -g -std=c++11 -O2 && size %< <CR>
+au BufEnter *.java nm <F5> :!time java %< <CR> | nm <F8> :!time java %< < %<.in | nm <F9> :!javac % <CR>
 \end{lstlisting}
 

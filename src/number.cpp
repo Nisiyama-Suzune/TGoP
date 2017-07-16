@@ -300,7 +300,7 @@ namespace number {
 			else {
 				long long rem = number;
 				for (long long i = 2; i * i <= rem; ++i)
-					while (!number % i) {
+					while (!(rem % i)) {
 						ans.push_back (i);
 						rem /= i;
 					}
