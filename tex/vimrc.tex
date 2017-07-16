@@ -7,8 +7,8 @@ nm <F3> :vsplit %<.in <CR>
 nm <F4> :!gedit % <CR>
 
 au BufEnter *.cpp set cin
-au BufEnter *.cpp nm <F5> :!time ./%< <CR> | nm <F7> :!gdb ./%< <CR> | nm <F8> :!time ./%< < %<.in <CR> | 
-\ nm <F9> :!g++ % -o %< -g -std=c++11 -O2 && size %< <CR>
-au BufEnter *.java nm <F5> :!time java %< <CR> | nm <F8> :!time java %< < %<.in | nm <F9> :!javac % <CR>
+au BufEnter *.cpp nm <F5> :!time ./%< <CR>|nm <F7> :!gdb ./%< <CR>|nm <F8> :!time ./%< < %<.in <CR>|
+\nm <F9> :!g++ % -o %< -g -std=c++11 -O2 && size %< <CR>
+au BufEnter *.java nm <F5> :!time java %< <CR>|nm <F8> :!time java %< < %<.in|nm <F9> :!javac % <CR>
 \end{lstlisting}
 
