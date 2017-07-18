@@ -877,8 +877,7 @@ namespace graph {
 			for (int i = e.begin[u]; ~i; i = e.next[i])
 				if (e.dest[i] != f && dfn[u] < dfn[e.dest[i]]) {
 					s[s_s++] = i;
-					if (!~dfn[u])
-					{
+					if (!~dfn[u]) {
 						dfs (e, e.dest[i], u);
 						low[u] = std::min (low[u], low[e.dest[i]]);
 						if (low[e.dest[i]] >= dfn[u]) {
@@ -917,7 +916,7 @@ namespace graph {
 		void dfs (const edge_list <MAXN, MAXM> &e, int u, int f) {
 			dfn[u] = low[u] = ind++;
 			s[s_s++] = u;
-			for (int i = e.begin[u]; ~i; i = e.next[i]) 
+			for (int i = e.begin[u]; ~i; i = e.next[i])
 				if (e.dest[i] != f) {
 					if (!~dfn[e.dest[i]]) {
 						dfs (e, e.dest[i], u);
@@ -947,7 +946,7 @@ namespace graph {
 					idom[x] will be x if x does not have a dominator,
 					and will be -1 if x is not reachable from s.
 	*/
-			
+
 	template <int MAXN = 100000, int MAXM = 100000>
 	struct dominator_tree {
 
@@ -1027,6 +1026,61 @@ namespace graph {
 			}
 		}
 
+	};
+
+	/*	Stoer Wagner algorithm :
+			Finds the minimum cut of an undirected graph.
+			Usage :
+				input : n, edge[][] : the size and weights of the graph.
+				int stoer_wagner::solve () : returns the minimum cut.
+	*/
+
+	template <int MAXN = 500>
+	struct stoer_wagner {
+		int n, edge[MAXN][MAXN];
+
+		int dist[MAXN];
+		bool vis[MAXN], bin[MAXN];
+
+		stoer_wagner () {
+			memset (edge, 0, sizeof (edge));
+			memset (bin, false, sizeof (bin));
+		}
+
+		int contract (int &s, int &t)  {
+			memset (dist, 0, sizeof (dist));
+			memset (vis, false, sizeof (vis));
+			int i, j, k, mincut, maxc;
+			for (i = 1; i <= n; i++) {
+				k = -1; maxc = -1;
+				for (j = 1; j <= n; j++)
+					if (!bin[j] && !vis[j] && dist[j] > maxc) {
+						k = j;  maxc = dist[j];
+					}
+				if (k == -1) return mincut;
+				s = t; t = k;
+				mincut = maxc;
+				vis[k] = true;
+				for (j = 1; j <= n; j++)
+					if (!bin[j] && !vis[j])
+						dist[j] += edge[k][j];
+			}
+			return mincut;
+		}
+
+		int solve () {
+			int mincut, i, j, s, t, ans;
+			for (mincut = INF, i = 1; i < n; i++) {
+				ans = contract ( s, t );
+				bin[t] = true;
+				if (mincut > ans) mincut = ans;
+				if (mincut == 0) return 0;
+				for (j = 1; j <= n; j++)
+					if (!bin[j])
+						edge[s][j] = (edge[j][s] += edge[j][t]);
+			}
+			return mincut;
+		}
 	};
 
 }
