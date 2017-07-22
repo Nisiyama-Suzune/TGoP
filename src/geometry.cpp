@@ -36,7 +36,7 @@ namespace geometry {
 
 	struct point {
 		double x, y;
-		point (const double &x = 0, const double &y = 0) : x (x), y (y) {}
+		explicit point (const double &x = 0, const double &y = 0) : x (x), y (y) {}
 		double norm () const { return sqrt (x * x + y * y); }
 		double norm2 () const { return x * x + y * y; }
 		point unit () const {
@@ -102,7 +102,7 @@ namespace geometry {
 
 	struct line {
 		point s, t;
-		line (const point &s = point (), const point &t = point ()) : s (s), t (t) {}
+		explicit line (const point &s = point (), const point &t = point ()) : s (s), t (t) {}
 		double length () const { return dis (s, t); }
 	};
 
@@ -231,7 +231,7 @@ namespace geometry {
 	struct circle {
 		point c;
 		double r;
-		circle (point c = point (), double r = 0) : c (c), r (r) {}
+		explicit circle (point c = point (), double r = 0) : c (c), r (r) {}
 	};
 
 	bool operator == (const circle &a, const circle &b) {
@@ -293,7 +293,8 @@ namespace geometry {
 
 	std::pair <line, line> tangent (const point &a, const circle &b) {
 		circle p = make_circle (a, b.c);
-		return circle_intersect (p, b);
+		auto d = circle_intersect (p, b);
+		return std::make_pair (line (d.first, a), line (d.second, a));
 	}
 
 	/*	Convex hull :
