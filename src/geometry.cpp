@@ -130,7 +130,7 @@ namespace geometry {
 		return sgn (det (a - c.s, c.t - c.s)) * sgn (det (b - c.s, c.t - c.s)) < 0;
 	}
 
-	bool intersect_judgement (const line &a, const line &b) {
+	bool intersect_judgment (const line &a, const line &b) {
 		if (point_on_segment (b.s, a) || point_on_segment (b.t, a)) return true;
 		if (point_on_segment (a.s, b) || point_on_segment (a.t, b)) return true;
 		return two_side (a.s, a.t, b) && two_side (b.s, b.t, a);
