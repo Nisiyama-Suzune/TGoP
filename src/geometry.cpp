@@ -146,6 +146,10 @@ namespace geometry {
 		return fabs (det (b.t - b.s, a - b.s)) / dis (b.s, b.t);
 	}
 
+	point project_to_line (const point &a, const line &b) {
+		return b.s + (b.t - b.s) * (dot (a - b.s, b.t - b.s) / (b.t - b.s).norm2 ());
+	}
+
 	double point_to_segment (const point &a, const line &b) {
 		if (sgn (dot (b.s - a, b.t - b.s) * dot (b.t - a, b.t - b.s)) <= 0)
 			return fabs (det (b.t - b.s, a - b.s)) / dis (b.s, b.t);
@@ -174,10 +178,6 @@ namespace geometry {
 		for (int i = 0; i < (int) a.size (); ++i)
 			ans += det (a[i], a[ (i + 1) % a.size ()]) / 2.0;
 		return ans;
-	}
-
-	point project_to_line (const point &a, const line &b) {
-		return b.s + (b.t - b.s) * (dot (a - b.s, b.t - b.s) / (b.t - b.s).norm2 ());
 	}
 
 	/*	Centers of a triangle :
