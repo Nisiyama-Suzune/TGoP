@@ -107,7 +107,7 @@ namespace geometry {
 	};
 
 	/*	Point & line interactions :
-			bool point_on_line (const point &a, const line &b) : checks if a is on b.
+			bool point_on_segment (const point &a, const line &b) : checks if a is on b.
 			bool intersect_judgement (const line &a, const line &b) : checks if segment a and b intersect.
 			point line_intersect (const line &a, const line &b) : returns the intersection of a and b.
 				Fails on colinear or parallel situations.
@@ -122,7 +122,7 @@ namespace geometry {
 				returns the projection of a on b,
 	*/
 
-	bool point_on_line (const point &a, const line &b) {
+	bool point_on_segment (const point &a, const line &b) {
 		return sgn (det (a - b.s, b.t - b.s)) == 0 && sgn (dot (b.s - a, b.t - a)) <= 0;
 	}
 
@@ -131,8 +131,8 @@ namespace geometry {
 	}
 
 	bool intersect_judgement (const line &a, const line &b) {
-		if (point_on_line (b.s, a) || point_on_line (b.t, a)) return true;
-		if (point_on_line (a.s, b) || point_on_line (a.t, b)) return true;
+		if (point_on_segment (b.s, a) || point_on_segment (b.t, a)) return true;
+		if (point_on_segment (a.s, b) || point_on_segment (a.t, b)) return true;
 		return two_side (a.s, a.t, b) && two_side (b.s, b.t, a);
 	}
 
@@ -161,7 +161,7 @@ namespace geometry {
 						The boolean returned may be changed if necessary.
 							i.e. the algorithm may check if p is strictly in the polygon.
 			*/
-			if (point_on_line (p, line (a, b))) return true;
+			if (point_on_segment (p, line (a, b))) return true;
 			int x = sgn (det (p - a, b - a)), y = sgn (a.y - p.y), z = sgn (b.y - p.y);
 			if (x > 0 && y <= 0 && z > 0) counter++;
 			if (x < 0 && z <= 0 && y > 0) counter--;
