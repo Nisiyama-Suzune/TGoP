@@ -269,63 +269,63 @@ namespace graph {
 	};
 
 	/*	Kuhn–Munkres algorithm :
-			weighted maximum matching algorithm for bipartition graphs. Complexity O (N^3).
+			weighted maximum matching algorithm for bipartition graphs (1-base). Complexity O (N^3).
 			struct kuhn_munkres :
-				Initialize : pass nx, ny as the size of both sets, w as the weight matrix.
-				Usage : solve () for the minimum matching. The exact matching is in link[].
+				Initialize : pass n as the size of both sets, w as the weight matrix.
+				Usage : solve () for the maximum matching. The exact matching is in match[].
 	*/
 
 	template <int MAXN = 500>
 	struct kuhn_munkres {
 
-		int nx, ny;
-		int w[MAXN][MAXN];
+		int n, w[MAXN][MAXN];  
 
-		int lx[MAXN], ly[MAXN], visx[MAXN], visy[MAXN], slack[MAXN], link[MAXN];
+		int lx[MAXN], ly[MAXN], match[MAXN], way[MAXN], slack[MAXN];
+		bool used[MAXN];
 
-		int dfs (int x) {
-			visx[x] = 1;
-			for (int y = 0; y < ny; y ++) {
-				if (visy[y]) continue;
-				int t = lx[x] + ly[y] - w[x][y];
-				if (t == 0) {
-					visy[y] = 1;
-					if (link[y] == -1 || dfs (link[y])) {
-						link[y] = x;
-						return 1;
+		void hungary(int x) {
+			match[0] = x; 
+			int j0 = 0;
+			std::fill (slack, slack + n + 1, INF);
+			std::fill (used, used + n + 1, false);
+			do {
+				used[j0] = true;
+				int i0 = match[j0], delta = INF, j1 = 0;
+				for (int j = 1; j <= n; ++j) 
+					if (used[j] == false) {
+						int cur = -w[i0][j] - lx[i0] - ly[j];
+						if (cur < slack[j]) {
+							slack[j] = cur;
+							way[j] = j0;
+						}
+						if (slack[j] < delta) {
+							delta = slack[j];
+							j1 = j;
+						}
 					}
-				} else slack[y] = std::max (slack[y], t);
-			}
-			return 0;
+				for (int j = 0; j <= n; ++j) {
+					if (used[j]) {
+						lx[match[j]] += delta;
+						ly[j] -= delta;
+					}
+					else slack[j] -= delta;
+				}
+				j0 = j1;
+			} while (match[j0] != 0);
+			do {
+				int j1 = way[j0];
+				match[j0] = match[j1];
+				j0 = j1;
+			} while (j0);
 		}
 
-		int solve () {
-			int i, j;
-			std::fill (link, link + ny, -1);
-			std::fill (ly, ly + ny, 0);
-			for (i = 0; i < nx; i++)
-				for (j = 0, lx[i] = INF; j < ny; j++)
-					lx[i] = std::min (lx[i], w[i][j]);
-			for (int x = 0; x < nx; x++) {
-				for (i = 0; i < ny; i++) slack[i] = -INF;
-				while (true) {
-					std::fill (visx, visx + nx, 0);
-					std::fill (visy, visy + ny, 0);
-					if (dfs (x)) break;
-					int d = INF;
-					for (i = 0; i < ny; i++)
-						if (!visy[i] && d < slack[i]) d = slack[i];
-					for (i = 0; i < nx; i++)
-						if (visx[i]) lx[i] -= d;
-					for (i = 0; i < ny; i++)
-						if (visy[i]) ly[i] += d;
-						else slack[i] -= d;
-				}
-			}
-			int res = 0;
-			for (i = 0; i < ny; i ++)
-				if (link[i] > -1) res += w[link[i]][i];
-			return res;
+		int solve() {
+			for (int i = 1; i <= n; ++i)
+				match[i] = lx[i] = ly[i] = way[i] = 0;
+			for (int i = 1; i <= n; ++i) hungary (i);
+			int sum = 0;
+			for (int i = 1; i <= n; ++i) sum += w[match[i]][i];
+			return sum;
 		}
 
 	};
@@ -553,11 +553,11 @@ namespace graph {
 				while (q.size()) {
 					int u = q.front();
 					q.pop();
-					if (S[st[u]] == 1)continue;
+					if (S[st[u]] == 1) continue;
 					for (int v = 1; v <= n; ++v)
 						if (g[u][v].w > 0 && st[u] != st[v]) {
 							if (e_delta (g[u][v]) == 0) {
-								if (on_found_edge (g[u][v]))return true;
+								if (on_found_edge (g[u][v])) return true;
 							} else update_slack (u, st[v]);
 						}
 				}
