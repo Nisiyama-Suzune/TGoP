@@ -200,7 +200,7 @@ namespace string {
 		}
 		
 		void solve (int *a, int n) {
-			doubling (a, n);
+			a[n] = -1; doubling (a, n);
 			for (int i = 0; i < n; ++i) rk[sa[i]] = i;
 			int cur = 0;
 			for (int i = 0; i < n; ++i)
