@@ -154,6 +154,7 @@ namespace data_structure {
 			Usage :
 				Maintain query values in msg.
 				Maintain modifications in tag.
+				Change merge () and push () accordingly.
 	*/
 
 	template <int MAXN = 100000>
@@ -193,15 +194,15 @@ namespace data_structure {
 			return tag (a.r ^ b.r);
 		}
 
+		void push (int x, const tag &t) {
+			if (t.r) std::swap (n[x].c[0], n[x].c[1]);
+			n[x].t = merge (n[x].t, t);
+		}
+
 		void update (int x) {
 			n[x].m = merge (msg (), x);
 			if (~n[x].c[0]) n[x].m = merge (n[x].m, n[n[x].c[0]].m);
 			if (~n[x].c[1]) n[x].m = merge (n[x].m, n[n[x].c[1]].m);
-		}
-
-		void push (int x, const tag &t) {
-			if (t.r) std::swap (n[x].c[0], n[x].c[1]);
-			n[x].t = merge (n[x].t, t);
 		}
 
 		void push_down (int x) {
