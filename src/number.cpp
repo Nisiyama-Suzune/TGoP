@@ -469,7 +469,8 @@ namespace number {
 			return result;
 		}
 
-		linear_rec (const std::vector <int> &first, const std::vector <int> &trans) : first(first), trans(trans) {
+		linear_rec (const std::vector <int> &first, const std::vector <int> &trans) : 
+			first(first), trans(trans) {
 			n = first.size();
 			std::vector <int> a(n + 1, 0);
 			a[1] = 1;
