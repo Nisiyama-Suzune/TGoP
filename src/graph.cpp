@@ -963,13 +963,11 @@ namespace graph {
 			}
 		}
 
-
 		int getfa (int x) {
 			if (fa[x] == x) return x;
 			int ret = getfa (fa[x]);
-			if (dfn[sdom[smin[fa[x]]]] < dfn[sdom[smin[x]]]) {
+			if (dfn[sdom[smin[fa[x]]]] < dfn[sdom[smin[x]]]) 
 				smin[x] = smin[fa[x]];
-			}
 			return fa[x] = ret;
 		}
 
@@ -995,9 +993,8 @@ namespace graph {
 							getfa (p);
 							p = sdom[smin[p]];
 						}
-						if (dfn[sdom[x]] > dfn[p]) {
+						if (dfn[sdom[x]] > dfn[p]) 
 							sdom[x] = p;
-						}
 					}
 					tmp.add_edge (sdom[x], x);
 				}
@@ -1005,24 +1002,20 @@ namespace graph {
 					int y = tmp.dest[tmp.begin[x]];
 					tmp.begin[x] = tmp.next[tmp.begin[x]];
 					getfa (y);
-					if (x != sdom[smin[y]]) {
+					if (x != sdom[smin[y]]) 
 						idom[y] = smin[y];
-					} else {
+					else 
 						idom[y] = x;
-					}
 				}
-				for (int i = succ.begin[x]; ~i; i = succ.next[i]) {
-					if (f[succ.dest[i]] == x) {
+				for (int i = succ.begin[x]; ~i; i = succ.next[i]) 
+					if (f[succ.dest[i]] == x) 
 						fa[succ.dest[i]] = x;
-					}
-				}
 			}
 			idom[s] = s;
 			for (int i = 1; i < stamp; ++i) {
 				int x = id[i];
-				if (idom[x] != sdom[x]) {
+				if (idom[x] != sdom[x]) 
 					idom[x] = idom[idom[x]];
-				}
 			}
 		}
 
