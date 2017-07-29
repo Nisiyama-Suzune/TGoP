@@ -45,7 +45,7 @@ namespace geometry {
 		}
 		point rot90 () const {return point (-y, x); }
 		point _rot90 () const {return point (y, -x); }
-		point rotate (const double &t) const {
+		point rot (const double &t) const {
 			double c = cos (t), s = sin (t);
 			return point (x * c - y * s, x * s + y * c);
 		}
@@ -218,9 +218,9 @@ namespace geometry {
 		else if (sgn (cosb + 0.5) < 0) mid = b;
 		else if (sgn (cosc + 0.5) < 0) mid = c;
 		else if (sgn (det (b - a, c - a)) < 0)
-			mid = line_intersect (line (a, b + (c - b).rotate (sq3)), line (b, c + (a - c).rotate (sq3)));
+			mid = line_intersect (line (a, b + (c - b).rot (sq3)), line (b, c + (a - c).rot (sq3)));
 		else
-			mid = line_intersect (line (a, c + (b - c).rotate (sq3)), line (c, b + (a - b).rotate (sq3)));
+			mid = line_intersect (line (a, c + (b - c).rot (sq3)), line (c, b + (a - b).rot (sq3)));
 		return mid;
 	}
 
@@ -493,102 +493,71 @@ namespace geometry {
 	};
 
 	/*	Union of circles :
-			std::vector <double> union_circle::solve (const std::vector <circle> &c) :
 				returns the union of circle set c.
 				The i-th element is the area covered with at least i circles.
 	*/
 
+	template <int MAXN = 500>
 	struct union_circle {
+		int C;
+		circle c[MAXN];
 
-		struct cp {
-			double x, y, angle;
-			int d;
-			double r;
-			cp (const double &x = 0, const double &y = 0, const double &angle = 0,
-			    int d = 0, const double &r = 0) : x (x), y (y), angle (angle), d (d), r (r) {}
+		double area[MAXN];
+
+		struct event {
+			point p; double ang; int delta;
+			event (point p = point (), double ang = 0, int delta = 0) : p(p), ang(ang), delta(delta) {}
+			bool operator < (const event &a) { return ang < a.ang; }
 		};
 
-		double dis (const cp &a, const cp &b) {
-			return sqrt (sqr (a.x - b.x) + sqr (a.y - b.y));
+		void addevent(const circle &a, const circle &b, std::vector<event> &evt, int &cnt) {
+			double d2 = (a.c - b.c).norm2(), dRatio = ((a.r - b.r) * (a.r + b.r) / d2 + 1) / 2,
+				pRatio = sqrt (std::max (0., -(d2 - sqr(a.r - b.r)) * (d2 - sqr(a.r + b.r)) / (d2 * d2 * 4)));
+			point d = b.c - a.c, p = d.rot(PI / 2),
+				q0 = a.c + d * dRatio + p * pRatio,
+				q1 = a.c + d * dRatio - p * pRatio;
+			double ang0 = atan2 ((q0 - a.c).y, (q0 - a.c).x), ang1 = atan2 ((q1 - a.c).x, (q1 - a.c).y);
+			evt.emplace_back(q1, ang1, 1); evt.emplace_back(q0, ang0, -1);
+			cnt += ang1 > ang0;
 		}
 
-		double cross (const cp &p0, const cp &p1, const cp &p2) {
-			return (p1.x - p0.x) * (p2.y - p0.y) - (p1.y - p0.y) * (p2.x - p0.x);
+		bool issame(const circle &a, const circle &b) {
+			return sgn((a.c - b.c).norm()) == 0 && sgn(a.r - b.r) == 0; 
 		}
 
-		int cir_cross (cp p1, double r1, cp p2, double r2, cp &cp1, cp &cp2) {
-			double mx = p2.x - p1.x, sx = p2.x + p1.x, mx2 = mx * mx;
-			double my = p2.y - p1.y, sy = p2.y + p1.y, my2 = my * my;
-			double sq = mx2 + my2, d = - (sq - sqr (r1 - r2)) * (sq - sqr (r1 + r2));
-			if (sgn (d) < 0) return 0;
-			if (sgn (d) <= 0) d = 0;
-			else d = sqrt (d);
-			double x = mx * ((r1 + r2) * (r1 - r2) + mx * sx) + sx * my2;
-			double y = my * ((r1 + r2) * (r1 - r2) + my * sy) + sy * mx2;
-			double dx = mx * d, dy = my * d;
-			sq *= 2;
-			cp1.x = (x - dy) / sq;
-			cp1.y = (y + dx) / sq;
-			cp2.x = (x + dy) / sq;
-			cp2.y = (y - dx) / sq;
-			if (sgn (d) > 0) return 2;
-			else return 1;
+		bool overlap(const circle &a, const circle &b) { 
+			return sgn(a.r - b.r - (a.c - b.c).norm()) >= 0; 
 		}
 
-		static bool circmp (const cp &u, const cp &v) {
-			return sgn (u.r - v.r) < 0;
+		bool intersect(const circle &a, const circle &b) { 
+			return sgn((a.c - b.c).norm() - a.r - b.r) < 0; 
 		}
 
-		static bool cmp (const cp &u, const cp &v) {
-			if (sgn (u.angle - v.angle)) return u.angle < v.angle;
-			return u.d > v.d;
-		}
-
-		double calc (cp cir, cp cp1, cp cp2) {
-			double ans = (cp2.angle - cp1.angle) * sqr (cir.r)
-			             - cross (cir, cp1, cp2) + cross (cp (0, 0), cp1, cp2);
-			return ans / 2;
-		}
-
-		std::vector <double> solve (const std::vector <circle> &c) {
-			int n = c.size ();
-			std::vector <cp> cir, tp;
-			std::vector <double> area;
-			cir.resize (n);
-			tp.resize (2 * n);
-			area.resize (n + 1);
-			for (int i = 0; i < n; i++)
-				cir[i] = cp (c[i].c.x, c[i].c.y, 0, 1, c[i].r);
-			cp cp1, cp2;
-			std::sort (cir.begin (), cir.end (), circmp);
-			for (int i = 0; i < n; ++i)
-				for (int j = i + 1; j < n; ++j)
-					if (sgn (dis (cir[i], cir[j]) + cir[i].r - cir[j].r) <= 0)
-						cir[i].d++;
-			for (int i = 0; i < n; ++i) {
-				int tn = 0, cnt = 0;
-				for (int j = 0; j < n; ++j) {
-					if (i == j) continue;
-					if (cir_cross (cir[i], cir[i].r, cir[j], cir[j].r, cp2, cp1) < 2) continue;
-					cp1.angle = atan2 (cp1.y - cir[i].y, cp1.x - cir[i].x);
-					cp2.angle = atan2 (cp2.y - cir[i].y, cp2.x - cir[i].x);
-					cp1.d = 1;
-					tp[tn++] = cp1;
-					cp2.d = -1;
-					tp[tn++] = cp2;
-					if (sgn (cp1.angle - cp2.angle) > 0) cnt++;
-				}
-				tp[tn++] = cp (cir[i].x - cir[i].r, cir[i].y, PI, -cnt);
-				tp[tn++] = cp (cir[i].x - cir[i].r, cir[i].y, -PI, cnt);
-				std::sort (tp.begin (), tp.begin () + tn, cmp);
-				int p, s = cir[i].d + tp[0].d;
-				for (int j = 1; j < tn; ++j) {
-					p = s;
-					s += tp[j].d;
-					area[p] += calc (cir[i], tp[j - 1], tp[j]);
-				}
-			}
-			return area;
+		void solve() {
+			std::fill (area, area + C + 2, 0);
+			for (int i = 0; i < C; ++i) {
+				int cnt = 1;
+				std::vector<event> evt;
+				for (int j = 0; j < i; ++j) if (issame(c[i], c[j])) ++cnt;
+				for (int j = 0; j < C; ++j)
+					if (j != i && !issame(c[i], c[j]) && overlap(c[j], c[i]))
+						++cnt;
+				for (int j = 0; j < C; ++j)
+					if (j != i && !overlap(c[j], c[i]) && !overlap(c[i], c[j]) && intersect(c[i], c[j]))
+						addevent(c[i], c[j], evt, cnt);
+				if (evt.empty()) area[cnt] += PI * c[i].r * c[i].r;
+				else {
+					std::sort(evt.begin(), evt.end());
+					evt.push_back(evt.front());
+					for (int j = 0; j + 1 < (int)evt.size(); ++j) {
+						cnt += evt[j].delta;
+						area[cnt] += det(evt[j].p, evt[j + 1].p) / 2;
+						double ang = evt[j + 1].ang - evt[j].ang;
+						if (ang < 0) ang += PI * 2;
+						area[cnt] += ang * c[i].r * c[i].r / 2 - sin(ang) * c[i].r * c[i].r / 2;
+					}	
+				}	
+			}	
 		}
 
 	};
