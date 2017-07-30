@@ -116,6 +116,7 @@ namespace number {
 					a[i] = complex (a[i].real () / n, a[i].imag ());
 			}
 		}
+
 	};
 
 	/* Number-theoretic transform :
