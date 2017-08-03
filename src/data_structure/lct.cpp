@@ -10,7 +10,7 @@ namespace data_structure {
 			Usage :
 				Maintain query values in msg.
 				Maintain modifications in tag.
-				Change merge () and push () accordingly.
+				Edit merge (), gen () and push () accordingly.
 	*/
 
 	template <int MAXN = 100000>
@@ -38,26 +38,26 @@ namespace data_structure {
 			}
 		} n[MAXN];
 
-		msg merge (const msg &a, const msg &b) {
+		msg merge (const msg &a, const msg &b) {	// Merge two messages.
 			return msg (a.size + b.size);
 		}
 
-		msg merge (const msg &a, int b) {
-			return msg (a.size + 1);
+		msg gen (int a) {
+			return msg (1);
 		}
 			
-		tag merge (const tag &a, const tag &b) {
+		tag merge (const tag &a, const tag &b) {	// Merge two tags.
 			return tag (a.r ^ b.r);
 		}
 
 		void push (int x, const tag &t) {
 			if (t.r) std::swap (n[x].c[0], n[x].c[1]);
-			n[x].t = merge (n[x].t, t);
+			n[x].t = merge (n[x].t, t);	// Remember to update messages manually.
 		}
 
 		void update (int x) {
-			n[x].m = merge (msg (), x);
-			if (~n[x].c[0]) n[x].m = merge (n[x].m, n[n[x].c[0]].m);
+			n[x].m = gen (x);
+			if (~n[x].c[0]) n[x].m = merge (n[n[x].c[0]].m, n[x].m);
 			if (~n[x].c[1]) n[x].m = merge (n[x].m, n[n[x].c[1]].m);
 		}
 
@@ -71,7 +71,8 @@ namespace data_structure {
 			push_down (x); push_down (n[x].c[k]);
 			int y = n[x].c[k]; n[x].c[k] = n[y].c[k ^ 1]; n[y].c[k ^ 1] = x;
 			if (n[x].f != -1) n[n[x].f].c[n[n[x].f].c[1] == x] = y;
-			n[y].f = n[x].f; n[x].f = y; n[n[x].c[k]].f = x; std::swap (n[x].p, n[y].p);
+			n[y].f = n[x].f; n[x].f = y; if (~n[x].c[k]) n[n[x].c[k]].f = x;
+			std::swap (n[x].p, n[y].p);
 			update (x); update (y);
 		}
 

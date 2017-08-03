@@ -25,14 +25,14 @@ namespace data_structure {
 			int l, r;
 			point p, dmin, dmax;
 			kd_node() {}
-			kd_node (const point &rhs) : l (0), r (0), p (rhs), dmin (rhs), dmax (rhs) {}
-			inline void merge (const kd_node &rhs, int k) {
+			kd_node (const point &rhs) : l (-1), r (-1), p (rhs), dmin (rhs), dmax (rhs) {}
+			void merge (const kd_node &rhs, int k) {
 				for (register int i = 0; i < k; i++) {
 					dmin.data[i] = std::min (dmin.data[i], rhs.dmin.data[i]);
 					dmax.data[i] = std::max (dmax.data[i], rhs.dmax.data[i]);
 				}
 			}
-			inline long long min_dist (const point &rhs, int k) const {
+			long long min_dist (const point &rhs, int k) const {
 				register long long ret = 0;
 				for (register int i = 0; i < k; i++) {
 					if (dmin.data[i] <= rhs.data[i] && rhs.data[i] <= dmax.data[i]) continue;
@@ -43,7 +43,7 @@ namespace data_structure {
 			}
 			long long max_dist (const point &rhs, int k) {
 				long long ret = 0;
-				for (register int i = 0; i < k; i++) {
+				for (int i = 0; i < k; i++) {
 					int tmp = std::max (std::abs (dmin.data[i] - rhs.data[i]),
 					                    std::abs (dmax.data[i] - rhs.data[i]));
 					ret += 1ll * tmp * tmp;
@@ -58,22 +58,22 @@ namespace data_structure {
 			result() {}
 			result (const long long &dist, const point &d) : dist (dist), d (d) {}
 			bool operator > (const result &rhs) const {
-				return dist > rhs.dist || (dist == rhs.dist && d.id < rhs.d.id);
+				return dist > rhs.dist || (dist == rhs.dist && d.id > rhs.d.id);
 			}
 			bool operator < (const result &rhs) const {
-				return dist < rhs.dist || (dist == rhs.dist && d.id > rhs.d.id);
+				return dist < rhs.dist || (dist == rhs.dist && d.id < rhs.d.id);
 			}
 		};
 
-		inline long long sqrdist (const point &a, const point &b) {
-			register long long ret = 0;
-			for (register int i = 0; i < k; i++)
+		long long sqrdist (const point &a, const point &b) {
+			long long ret = 0;
+			for (int i = 0; i < k; i++)
 				ret += 1ll * (a.data[i] - b.data[i]) * (a.data[i] - b.data[i]);
 			return ret;
 		}
 
-		inline int alloc() {
-			tree[size].l = tree[size].r = 0;
+		int alloc() {
+			tree[size].l = tree[size].r = -1;
 			return size++;
 		}
 
@@ -88,12 +88,12 @@ namespace data_structure {
 			if (l == r) return;
 			build ((depth + 1) % k, tree[rt].l, l, middle - 1);
 			build ((depth + 1) % k, tree[rt].r, middle + 1, r);
-			if (tree[rt].l) tree[rt].merge (tree[tree[rt].l], k);
-			if (tree[rt].r) tree[rt].merge (tree[tree[rt].r], k);
+			if (~tree[rt].l) tree[rt].merge (tree[tree[rt].l], k);
+			if (~tree[rt].r) tree[rt].merge (tree[tree[rt].r], k);
 		}
 
-		std::priority_queue<result, std::vector<result>, std::greater<result> > heap_l;
-		std::priority_queue<result, std::vector<result>, std::less<result> > heap_r;
+		std::priority_queue<result, std::vector<result>, std::less <result> > heap_l;
+		std::priority_queue<result, std::vector<result>, std::greater <result> > heap_r;
 
 		void _min_kth (const int &depth, const int &rt, const int &m, const point &d) {
 			result tmp = result (sqrdist (tree[rt].p, d), tree[rt].p);
@@ -104,10 +104,10 @@ namespace data_structure {
 				heap_l.push (tmp);
 			}
 			int x = tree[rt].l, y = tree[rt].r;
-			if (x != 0 && y != 0 && sqrdist (d, tree[x].p) > sqrdist (d, tree[y].p)) std::swap (x, y);
-			if (x != 0 && ((int)heap_l.size() < m || tree[x].min_dist (d, k) < heap_l.top().dist))
+			if (~x && ~y && sqrdist (d, tree[x].p) > sqrdist (d, tree[y].p)) std::swap (x, y);
+			if (~x && ((int)heap_l.size() < m || tree[x].min_dist (d, k) < heap_l.top().dist))
 				_min_kth ((depth + 1) % k, x, m, d);
-			if (y != 0 && ((int)heap_l.size() < m || tree[y].min_dist (d, k) < heap_l.top().dist))
+			if (~y && ((int)heap_l.size() < m || tree[y].min_dist (d, k) < heap_l.top().dist))
 				_min_kth ((depth + 1) % k, y, m, d);
 		}
 
@@ -120,10 +120,10 @@ namespace data_structure {
 				heap_r.push (tmp);
 			}
 			int x = tree[rt].l, y = tree[rt].r;
-			if (x != 0 && y != 0 && sqrdist (d, tree[x].p) < sqrdist (d, tree[y].p)) std::swap (x, y);
-			if (x != 0 && ((int)heap_r.size() < m || tree[x].max_dist (d, k) >= heap_r.top().dist))
+			if (~x && ~y && sqrdist (d, tree[x].p) < sqrdist (d, tree[y].p)) std::swap (x, y);
+			if (~x && ((int)heap_r.size() < m || tree[x].max_dist (d, k) >= heap_r.top().dist))
 				_max_kth ((depth + 1) % k, x, m, d);
-			if (y != 0 && ((int)heap_r.size() < m || tree[y].max_dist (d, k) >= heap_r.top().dist))
+			if (~y && ((int)heap_r.size() < m || tree[y].max_dist (d, k) >= heap_r.top().dist))
 				_max_kth ((depth + 1) % k, y, m, d);
 		}
 
