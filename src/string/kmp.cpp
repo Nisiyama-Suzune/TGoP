@@ -35,7 +35,7 @@ namespace string {
 					j += str[i] == match[j + 1], ++i) {
 				while (~j && str[i] != match[j + 1]) j = fail[j];
 			}
-			if (j == match.size () - 1) return str.size () - match.size ();
+			if (j == match.size () - 1) return i - match.size ();
 			return str.size ();
 		}
 
