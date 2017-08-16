@@ -74,7 +74,7 @@ namespace graph {
 		void add_edge (int u, int v, int c, int f) {
 			dest[size] = v; next[size] = begin[u]; cost[size] = c;
 			flow[size] = f; inv[size] = size + 1; begin[u] = size++;
-			dest[size] = u; next[size] = begin[v]; cost[size] = c;
+			dest[size] = u; next[size] = begin[v]; cost[size] = -c;
 			flow[size] = 0; inv[size] = size - 1; begin[v] = size++;
 		}
 	};

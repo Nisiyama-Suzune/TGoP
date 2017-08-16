@@ -31,7 +31,8 @@ namespace string {
 		}
 
 		int find (const std::string &str) {
-			for (int i = 0, j = -1; i < (int) str.size () && j < match.size () - 1; 
+			int i, j;
+			for (i = 0, j = -1; i < (int) str.size () && j < match.size () - 1; 
 					j += str[i] == match[j + 1], ++i) {
 				while (~j && str[i] != match[j + 1]) j = fail[j];
 			}

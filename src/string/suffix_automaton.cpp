@@ -15,6 +15,7 @@ namespace string {
 			tail : the last state.
 				Terminating states can be reached via visiting the ancestors of tail.
 			state::len : the longest length of the string in the state.
+			state::right - 1 : the first place where the state can be reached.
 			state::parent : the parent link.
 			state::dest : the automaton link.
 	*/
@@ -23,9 +24,9 @@ namespace string {
 	struct suffix_automaton {
 
 		struct state {
-			int len;
+			int len, right;
 			state *parent, *dest[MAXC];
-			state (int len = 0) : len (len), parent (NULL) {
+			state (int len = 0, int right = 0) : len (len), right (right), parent (NULL) {
 				memset (dest, 0, sizeof (dest));
 			}
 		} node_pool[MAXN * 2], *tot_node, *null = new state();
@@ -34,7 +35,7 @@ namespace string {
 		
 		void extend (int token) {
 			state *p = tail;
-			state *np = tail -> dest[token] ? null : new (tot_node++) state (tail -> len + 1);
+			state *np = tail -> dest[token] ? null : new (tot_node++) state (tail -> len + 1, tail -> len + 1);
 			while (p && !p -> dest[token])
 				p -> dest[token] = np, p = p -> parent;
 			if (!p) np -> parent = head;
