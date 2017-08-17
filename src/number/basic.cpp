@@ -26,11 +26,6 @@ namespace number {
 
 	long long abs (const long long &x) { return x > 0 ? x : -x; }
 
-	long long inverse (const long long &x, const long long &mod) {
-		if (x == 1) return 1;
-		return (mod - mod / x) * inverse (mod % x, mod) % mod;
-	}
-
 	int fpm (int x, int n, int mod) {
 		register int ans = 1, mul = x;
 		while (n) {
@@ -45,6 +40,12 @@ namespace number {
 	             long long &x, long long &y) {
 		if (b == 0) x = 1, y = 0;
 		else euclid (b, a % b, y, x), y -= a / b * x;
+	}
+
+	long long inverse (long long x, long long m) {
+		long long a, b;
+		euclid (x, m, a, b);
+		return (a % m + m) % m;
 	}
 
 	long long gcd (const long long &a, const long long &b) {
