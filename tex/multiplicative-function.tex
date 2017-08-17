@@ -54,7 +54,7 @@ struct prefix_mul {
 	long long n, mod, th, inv;
 	std::unordered_map <long long, long long> mem;
 
-	prefix_mul (func p_f, func p_g, func p_c) : p_f (p_f), p_g (p_g), p_c (p_c) {}
+	prefix_mul (func p_f, func p_g, func p_c, long long mod) : p_f (p_f), p_g (p_g), p_c (p_c), mod (mod) {}
 
 	void euclid (long long a, long long b, long long &x, long long &y) {
 		if (b == 0) x = 1, y = 0;
@@ -80,9 +80,9 @@ struct prefix_mul {
 		return mem[x] = ans;
 	}
 
-	long long solve (long long n, long long th, long long mod) {
+	long long solve (long long n, long long th) {
 		if (n <= 0) return 0;
-		prefix_mul::n = n; prefix_mul::th = th; prefix_mul::mod = mod;
+		prefix_mul::n = n; prefix_mul::th = th;
 		inv = inverse (p_g (1), mod);
 		return calc (n); 
 	}
