@@ -27,11 +27,13 @@ Moreover, since $f(n)$ is multiplicative, we can process the first $n^{\frac{2}{
 and for the rest of the elements, we apply the method shown above. The complexity can thus be enhaced to $O(n^{\frac{2}{3}})$.
 
 For the prefix sum of Euler's function $S(n)=\sum^n_{i=1}\varphi(i)$, notice that $\sum_{d|n}\varphi(d)=n$.
-Hence $\varphi*I(n)=id(n)$.($I(n)=1,id(n)=n$)
+Hence $\varphi*I=id$. ($I(n)=1,id(n)=n$)
 Now let $g(n)=I(n)$, and we have $S(n)=\sum^n_{i=1}i-\sum^n_{i=2}S(\floor*{\frac{n}{i}})$.
 
-For the prefix sum of Mobius function $S(n)=\sum^n_{i=1}\mu(i)$, notice that $\mu*I(n)=[n=1]$.
+For the prefix sum of Mobius function $S(n)=\sum^n_{i=1}\mu(i)$, notice that $\mu*I=(n)\{[n=1]\}$.
 Hence $S(n)=1-\sum^n_{i=2}S(\floor*{\frac{n}{i}})$.
+
+Some other convolutions include $(p^k)\{1-p\}*id=I$, $(p^k)\{p^k-p^{k+1}\}*id^2=id$ and $(p^k)\{p^{2k}-p^{2k-2}\}*I=id^2$.
 
 Example code :
 
