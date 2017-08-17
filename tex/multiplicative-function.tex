@@ -82,7 +82,7 @@ struct prefix_mul {
 
 	long long solve (long long n, long long th, long long mod) {
 		if (n <= 0) return 0;
-		prefix_mul::n = n; prefix_mul::mod = mod;
+		prefix_mul::n = n; prefix_mul::mod = mod; prefix_mul::th = th;
 		inv = inverse (p_g (1), mod);
 		std::fill (mem, mem + CUBEN, std::make_pair (false, 0ll));
 		return calc (n); 
