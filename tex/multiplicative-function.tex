@@ -65,7 +65,7 @@ struct prefix_mul {
 	long long inverse (long long x, long long m) {
 		long long a, b;
 		euclid (x, m, a, b);
-		return fix (a);
+		return (a % m + m) % m;
 	}
 
 	long long calc (long long x) {
