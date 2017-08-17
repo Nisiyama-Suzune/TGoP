@@ -52,7 +52,7 @@ struct prefix_mul {
 
 	func p_f, p_g, p_c;
 	long long n, mod, th, inv;
-	std::pair <bool, long long> mem[CUBEN];
+	std::unordered_map <long long, long long> mem;
 
 	prefix_mul (func p_f, func p_g, func p_c) : p_f (p_f), p_g (p_g), p_c (p_c) {}
 
@@ -69,22 +69,21 @@ struct prefix_mul {
 
 	long long calc (long long x) {
 		if (x <= th) return p_f (x);
-		if (mem[n / x].first) return mem[n / x].second;
-		mem[n / x].first = true;
+		auto d = mem.find (x);
+		if (d != mem.end ()) return d -> second;
 		long long ans = 0;
 		for (long long i = 2, la; i <= x; i = la + 1) {
 			la = x / (x / i);
 			ans = (ans + (p_g (la) - p_g (i - 1) + mod) * calc (x / i)) % mod;
 		}
 		ans = p_c (x) - ans; if (ans < 0) ans += mod; ans = ans * inv % mod;
-		return mem[n / x].second = ans;
+		return mem[x] = ans;
 	}
 
 	long long solve (long long n, long long th, long long mod) {
 		if (n <= 0) return 0;
-		prefix_mul::n = n; prefix_mul::mod = mod; prefix_mul::th = th;
+		prefix_mul::n = n; prefix_mul::th = th; prefix_mul::mod = mod;
 		inv = inverse (p_g (1), mod);
-		std::fill (mem, mem + CUBEN, std::make_pair (false, 0ll));
 		return calc (n); 
 	}
 
