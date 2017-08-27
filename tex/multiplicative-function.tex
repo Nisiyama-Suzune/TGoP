@@ -1,3 +1,4 @@
+\subsubsection{Dirichlet inversion}
 Define the Dirichlet convolution $f*g(n)$ as:
 
 $$f*g(n)=\sum^n_{d=1}[d|n]f(n)g(\frac{n}{d})$$
@@ -39,7 +40,6 @@ Example code :
 
 \begin{lstlisting}
 /*	Prefix sum of multiplicative functions :
-		CUBEN : N ^ (1 / 3).
 		p_f : the prefix sum of f (x) (1 <= x <= th).
 		p_g : the prefix sum of g (x) (0 <= x <= N).
 		p_c : the prefix sum of f (x) * g (x) (0 <= x <= N).
@@ -47,7 +47,6 @@ Example code :
 		REMEMBER THAT x IN p_g (x) AND p_c (x) MAY BE LARGER THAN MOD!!
 */
 
-template <int CUBEN = 11000>
 struct prefix_mul {
 
 	typedef long long (*func) (long long);
@@ -91,4 +90,34 @@ struct prefix_mul {
 
 };
 \end{lstlisting}
+
+\subsubsection{Inclusion-exclusion principle}
+
+Let $S(u)=\sum_{i=1}^uf(i)$ be the function we want to solve. Define
+$$P = \{x|x \leq n \text{ and only contains prime factors not exceeding } \sqrt{n}\}$$
+We can observe that $$S(n)=\sum_{x \in P} f(x)(1 + \sum_{p=\ceil{\sqrt{n}}}^{\floor{\frac{n}{x}}}[p \text{ is prime}]f(p))$$
+Due to the fact that $\floor{\frac{n}{x}}$ has $O(\sqrt{n})$ possible values, We only need to solve for
+$$g(n)=\sum_{x=1}^{n}[x \in P]f(x)$$
+$$h(n)=\sum_{x=1}^{n}[x \text{ is prime}]f(x)$$
+And the merging will be $O(\sqrt{n})$.
+
+For $g(n)$, let $g(n, i)=\sum_{x=1}^{n}[x \in P_i]f(x)$, where $P_i$ represents the set of numbers containing only the largest $i$ prime numbers (not exceeding $\sqrt{n}$) as their factors.
+Then we have
+$$g(n, i) = g(n, i - 1) + \sum_{c \geq 1}f(p_i^c)g(\frac{n}{p_i^c}, i - 1)$$
+Notice that for $p_i^2 > n$ we have $g(n, i) = g(n, i - 1) + f(p_i)$.
+Therefore, We can loop through $n = \floor{\frac{u}{d}}$. For each $n$, we solve for $g(n, i)$, breaking out when we meet some $i'$ such that $p_{i'}^2 > n$.
+For those $i > i'$ we can infer that $g(n, i) = g(n, i' - 1) + \sum_{d = i'}^if(p_d)$.
+
+For $h(n)$, it is critical to notice that because all $x$ we use is prime, we can find some coefficient $a$, such that 
+$$h(n) = \sum_{x=1}^{n}[x \text{ is prime}]\sum_{i=1}^ka_ix^i$$
+Define $h_k(n)=\sum_{x=1}^{n}[x \text{ is prime}]x^i$. Then $h(n)=\sum_{i=1}^{k}a_ih_k(n)$.
+Now similar to the last paragraph, we let
+$$h_k(n, i) = \sum_{x=1}^{n}[x \text{ is co-prime with the smallest } i \text { prime numbers}]x^k$$
+Then
+$$h_k(n, i) = h_k(n, i - 1) - p_i^kh_k(\frac{n}{p_i}, i - 1)$$
+Also, for $p_i^2 > n$ we have $h_k(n, i) = h_k(n, i - 1) + p_i^k$.
+Therefore, We can loop through $n = \floor{\frac{u}{d}}$. For each $n$, we solve for $h_k(n, i)$, breaking out when we meet some $i'$ such that $p_{i'}^2 > n$.
+For those $i > i'$ we can infer that $h_k(n, i) = h_k(n, i' - 1) + \sum_{d = i'}^ip_d^k$.
+
+The overall complexity is $O(\frac{n^{\frac{3}{4}}}{\log n})$.
 

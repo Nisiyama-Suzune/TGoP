@@ -14,7 +14,7 @@ namespace number {
 	struct bsgs {
 
 		int solve (int a, int b, int c) {
-			std::map <int, int> bs;
+			std::unordered_map <int, int> bs;
 			int m = (int) sqrt ((double) c) + 1, res = 1;
 			for (int i = 0; i < m; ++i) {
 				if (bs.find (res) == bs.end ()) bs[res] = i;
