@@ -39,56 +39,56 @@ Some other convolutions include $(p^k)\{1-p\}*id=I$, $(p^k)\{p^k-p^{k+1}\}*id^2=
 Example code :
 
 \begin{lstlisting}
+
 /*	Prefix sum of multiplicative functions :
-		p_f : the prefix sum of f (x) (1 <= x <= th).
+		CUBEN : MAXN ^ (1 / 3).
+		p_f : the prefix sum of f (x) (1 <= x < th).
 		p_g : the prefix sum of g (x) (0 <= x <= N).
-		p_c : the prefix sum of f (x) * g (x) (0 <= x <= N).
-		th : the thereshold, generally should be x ^ (2 / 3).
-		REMEMBER THAT x IN p_g (x) AND p_c (x) MAY BE LARGER THAN MOD!!
+		p_c : the prefix sum of f * g (x) (0 <= x <= N).
+		th : the thereshold, generally should be MAXN ^ (2 / 3).
+		mod : the module number.
+		inv : the inverse of g (1) regarding mod.
+		REMEMBER THAT x IN p_g (x) AND p_c (x) MAY BE LARGER THAN mod!!
+		Usage :
+			run init (n) first.
+			use ans (x) to fetch answer for n / x.
 */
 
+template <int CUBEN = 3000>
 struct prefix_mul {
 
 	typedef long long (*func) (long long);
 
 	func p_f, p_g, p_c;
-	long long n, mod, th, inv;
-	std::unordered_map <long long, long long> mem;
+	long long mod, th, inv;
+	long long n, mem[CUBEN];
 
-	prefix_mul (func p_f, func p_g, func p_c, long long mod) : p_f (p_f), p_g (p_g), p_c (p_c), mod (mod) {}
+	prefix_mul (func p_f, func p_g, func p_c, long long th, long long mod, long long inv) : 
+		p_f (p_f), p_g (p_g), p_c (p_c), th (th), mod (mod), inv (inv) {}
 
-	void euclid (long long a, long long b, long long &x, long long &y) {
-		if (b == 0) x = 1, y = 0;
-		else euclid (b, a % b, y, x), y -= a / b * x;
-	}
-
-	long long inverse (long long x, long long m) {
-		long long a, b;
-		euclid (x, m, a, b);
-		return (a % m + m) % m;
-	}
-
-	long long calc (long long x) {
-		if (x <= th) return p_f (x);
-		auto d = mem.find (x);
-		if (d != mem.end ()) return d -> second;
-		long long ans = 0;
-		for (long long i = 2, la; i <= x; i = la + 1) {
-			la = x / (x / i);
-			ans = (ans + (p_g (la) - p_g (i - 1) + mod) * calc (x / i)) % mod;
+	void init (long long n) {
+		prefix_mul::n = n;
+		for (long long i = 1, la; i <= n; i = la + 1) {
+			la = n / (n / i);
+			if (la < th) continue;
+			long long &ans = mem[n / la] = p_c (la);
+			for (long long j = 2, ne; j <= la; j = ne + 1) {
+				ne = la / (la / j);
+				ans = (ans + mod - (p_g (ne) - p_g (j - 1) + mod) * 
+					(la / j < th ? p_f (la / j) : mem[n / (la / j)]) % mod);
+				if (ans >= mod) ans -= mod;
+			}
+			if (inv != 1) ans = ans * inv % mod;
 		}
-		ans = p_c (x) - ans; if (ans < 0) ans += mod; ans = ans * inv % mod;
-		return mem[x] = ans;
 	}
 
-	long long solve (long long n, long long th) {
-		if (n <= 0) return 0;
-		prefix_mul::n = n; prefix_mul::th = th;
-		inv = inverse (p_g (1), mod);
-		return calc (n); 
+	long long ans (long long x) {
+		if (n / x < th) return p_f (n / x);
+		return mem[n / (n / x)];
 	}
 
 };
+
 \end{lstlisting}
 
 \subsubsection{Inclusion-exclusion principle}

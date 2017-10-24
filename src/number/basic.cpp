@@ -24,10 +24,8 @@ namespace number {
 
 	const double PI = acos (-1.);
 
-	long long abs (const long long &x) { return x > 0 ? x : -x; }
-
 	int fpm (int x, int n, int mod) {
-		register int ans = 1, mul = x;
+		int ans = 1, mul = x;
 		while (n) {
 			if (n & 1) ans = int (1ll * ans * mul % mod);
 			mul = int (1ll * mul * mul % mod);
