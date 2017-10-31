@@ -81,7 +81,7 @@ namespace geometry {
 			return std::vector <point> ();
 		point r = (b.c - a.c).unit ();
 		double d = dis (a.c, b.c);
-		double x = .5 * ((sqr (a.r) - sqr (b.r)) / d + d);
+		double x = ((sqr (a.r) - sqr (b.r)) / d + d) / 2;
 		double h = sqrt (sqr (a.r) - sqr (x));
 		if (sgn (h) == 0) return std::vector <point> ({a.c + r * x});
 		return std::vector <point> ({a.c + r * x + r.rot90 () * h,
@@ -99,15 +99,15 @@ namespace geometry {
 		if (sgn (a.r - b.r) == 0) {
 			point dir = b.c - a.c;
 			dir = (dir * a.r / dir.norm ()).rot90 ();
-			ret.push_back (line (a.o + dir, b.o + dir));
-			ret.push_back (line (a.o - dir, b.o - dir));
+			ret.push_back (line (a.c + dir, b.c + dir));
+			ret.push_back (line (a.c - dir, b.c - dir));
 		} else {
 			point p = (b.c * a.r - a.c * b.r) / (a.r - b.r); 
 			std::vector pp = tangent (p, a), qq = tangent (p, b);
 			if (pp.size () == 2 && qq.size () == 2) {
 				if (cmp (a.r, b.r) < 0) std::swap (pp[0], pp[1]), std::swap (qq[0], qq[1]);
-				ret.push_back(line (p1, q1));
-				ret.push_back(line (p2, q2));
+				ret.push_back (line (pp[0], qq[0]));
+				ret.push_back (line (pp[1], qq[1]));
 			}
 		}
 		return ret;
@@ -117,8 +117,8 @@ namespace geometry {
 		point p = (b.c * a.r + a.c * b.r) / (a.r + b.r); 
 		std::vector pp = tangent (p, a), qq = tangent (p, b);
 		if (pp.size () == 2 && qq.size () == 2) {
-			ret.push_back(line (p1, q1));
-			ret.push_back(line (p2, q2));
+			ret.push_back (line (pp[0], qq[0]));
+			ret.push_back (line (pp[1], qq[1]));
 		}
 		return ret;
 	}

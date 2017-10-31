@@ -1,0 +1,10 @@
+\begin{lstlisting}
+	std::default_random_engine generator;
+	std::uniform_int_distribution <int> distribution (1, 6);
+	//std::uniform_real_distribution <double> is available for real numbers.
+	int dice_roll = distribution (generator);
+
+	auto dice = std::bind (distribution, generator);
+	int wisdom = dice () + dice () + dice ();
+\end{lstlisting}
+
