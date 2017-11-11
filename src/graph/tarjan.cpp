@@ -20,7 +20,7 @@ namespace graph {
 
 		void dfs (const edge_list <MAXN, MAXM> &e, int u) {
 			dfn[u] = low[u] = ind++;
-			s[s_s++] = u;
+			s[s_s++] = u; ins[u] = true;
 			for (int i = e.begin[u]; ~i; i = e.next[i]) {
 				if (!~dfn[e.dest[i]]) {
 					dfs (e, e.dest[i]);

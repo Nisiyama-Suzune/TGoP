@@ -26,7 +26,7 @@ namespace geometry {
 		if (c.empty ()) return ret;
 		for (int i = 0; i < (int) c.size (); ++i) {
 			int j = (i + 1) % (int) c.size ();
-			if (!turn_right (p.s, p.t, c[i])) ret.push_back (c[i]);
+			if (turn_left (p.s, p.t, c[i])) ret.push_back (c[i]);
 			if (two_side (c[i], c[j], p))
 				ret.push_back (line_intersect (p, line (c[i], c[j])));
 		}

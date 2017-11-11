@@ -73,17 +73,17 @@ __inline int mul_mod (int a, int b) {
 }
 
 __inline int next_uint () {
-	const int SIZE = 110000; static char buf[SIZE]; static int p = SIZE;
+	const int SIZE = 110000; static char buf[SIZE + 1]; static int p = SIZE;
 	register int ans = 0, f = 1;
-	while ((p < SIZE || fread (buf, 1, SIZE, stdin) && (p = 0, 1))
-		&& (isdigit (buf[p]) && (ans = ans * 10 + buf[p] - '0', f = 0, 1) || f)) ++p;
+	while ((p < SIZE || (p = 0, buf[fread (buf, 1, SIZE, stdin)] = 0, buf[0]))
+			&& (isdigit (buf[p]) && (ans = ans * 10 + buf[p] - '0', f = 0, 1) || f)) ++p;
 	return ans;
 }
 
 __inline int next_int () {
-	const int SIZE = 110000; static char buf[SIZE]; static int p = SIZE;
+	const int SIZE = 110000; static char buf[SIZE + 1]; static int p = SIZE;
 	register int ans = 0, f = 1, sgn = 1;
-	while ((p < SIZE || fread (buf, 1, SIZE, stdin) && (p = 0, 1)) && 
+	while ((p < SIZE || (p = 0, buf[fread (buf, 1, SIZE, stdin)] = 0, buf[0]))
 		(isdigit (buf[p]) && (ans = ans * 10 + buf[p] - '0', f = 0, 1) || 
 		f && (buf[p] == '-' && (sgn = 0), 1))) ++p;
 	return sgn ? ans : -ans;

@@ -84,7 +84,7 @@ namespace graph {
 		int d[MAXN], w[MAXN], q[MAXN];
 
 		int bfs (flow_edge_list <MAXN, MAXM> &e) {
-			for (int i = 0; i < n; i ++) d[i] = -1;
+			for (int i = 0; i < n; ++i) d[i] = -1;
 			int l, r;
 			q[l = r = 0] = s, d[s] = 0;
 			for (; l <= r; l ++)
@@ -110,12 +110,14 @@ namespace graph {
 			return ret;
 		}
 
-		void solve (flow_edge_list <MAXN, MAXM> &e, int n, int s, int t) {
+		int solve (flow_edge_list <MAXN, MAXM> &e, int n, int s, int t) {
+			int ans = 0;
 			dinic::n = n; dinic::s = s; dinic::t = t;
 			while (bfs (e)) {
-				for (int i = 0; i < n; i ++) w[i] = e.begin[i];
-				dfs (e, s, INF);
+				for (int i = 0; i < n; ++i) w[i] = e.begin[i];
+				ans += dfs (e, s, INF);
 			}
+			return ans;
 		}
 
 	};
