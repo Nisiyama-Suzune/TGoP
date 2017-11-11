@@ -6,15 +6,15 @@
 namespace graph {
 
 	/*	Tarjan :
-			returns strongly connected components.
+			returns strongly connected comps.
 			void tarjan::solve (const edge_list &, int) :
-				component[] gives which component a vertex belongs to.
+				comp[] gives which comp a vertex belongs to.
 	*/
 
 	template <int MAXN = 100000, int MAXM = 100000>
 	struct tarjan {
 
-		int component[MAXN], component_size;
+		int comp[MAXN], comp_size;
 
 		int dfn[MAXN], low[MAXN], ins[MAXN], s[MAXN], s_s, ind;
 
@@ -30,16 +30,16 @@ namespace graph {
 			}
 			if (dfn[u] == low[u]) {
 				do {
-					component[s[--s_s]] = component_size; ins[s[s_s]] = false;
+					comp[s[--s_s]] = comp_size; ins[s[s_s]] = false;
 				} while (s[s_s] != u);
-				++component_size;
+				++comp_size;
 			}
 		}
 
 		void solve (const edge_list <MAXN, MAXM> &e, int n) {
 			std::fill (dfn, dfn + MAXN, -1);
-			std::fill (component, component + MAXN, -1);
-			component_size = s_s = ind = 0;
+			std::fill (comp, comp + MAXN, -1);
+			comp_size = s_s = ind = 0;
 			for (int i = 0; i < n; ++i) if (!~dfn[i]) dfs (e, i);
 		}
 
